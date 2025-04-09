@@ -1,0 +1,163 @@
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background-color: #6414d2;
+  color: white;
+  width: 50px;
+  transition: width 0.3s ease;
+  overflow-x: hidden;
+  z-index: 1000;
+  padding-top: 1rem;
+}
+
+.sidebar.expanded {
+  width: 200px;
+}
+
+.toggle-button {
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.toggle-button mat-icon {
+  color: white;
+}
+
+.group-list {
+  padding-left: 1rem;
+}
+
+.group-list h3 {
+  font-size: 16px;
+  margin: 0 0 1rem;
+}
+
+.group-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.group-list li {
+  padding: 8px 4px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.group-list li:hover {
+  background-color: #7e2ce0;
+}
+
+.group-list li.selected {
+  background-color: #f1ac38;
+  color: black;
+}
+
+.manage-button {
+  margin-top: 1rem;
+  background-color: #eee;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  width: 100%;
+  max-width: 150px;
+}
+
+.group-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.group-modal {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  width: 320px;
+  max-width: 90%;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+.group-modal h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 18px;
+}
+
+.group-modal ul {
+  list-style: none;
+  padding: 0;
+  max-height: 200px;
+  overflow-y: auto;
+  margin-bottom: 1rem;
+}
+
+.group-modal li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+
+  padding: 0.4rem 0.6rem;
+  border-radius: 4px;
+}
+
+.group-modal input {
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+.group-modal .add-btn,
+.group-modal .remove-btn,
+.group-modal .close-btn {
+  background-color: #6414d2;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.group-modal .remove-btn {
+  background-color: #d9534f;
+}
+
+.group-modal .actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
+}
+
+.group-modal .add-btn {
+  background-color: #007bff;
+  color: white;
+}
+
+.group-modal .close-btn {
+  background-color: #28a745;
+  color: white;
+}
+
+.group-modal li input {
+  flex: 1;
+  margin-right: 0.5rem;
+  padding: 0.3rem 0.4rem;
+}

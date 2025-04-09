@@ -8,4 +8,6 @@ import { RouterOutlet } from '@angular/router';
 })
 export class AppComponent {
   title = 'to-do-list';
+
+  grupoSelecionado: string = '';
 }

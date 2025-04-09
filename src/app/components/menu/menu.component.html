@@ -1,0 +1,50 @@
+<div class="sidebar" [class.expanded]="isExpanded">
+    <div class="toggle-button" (click)="toggleMenu()">
+        <mat-icon>menu</mat-icon>
+    </div>
+
+    <div class="group-list" *ngIf="isExpanded">
+        <h3>Grupos</h3>
+        <ul>
+            <li
+                *ngFor="let group of groups"
+                (click)="selectGroup(group)"
+                [class.selected]="group === selectedGroup">
+                {{ group }}
+            </li>
+        </ul>
+
+        <button class="manage-button" (click)="openGroupManager()">Gerenciar
+            Grupos</button>
+    </div>
+</div>
+
+<!-- POPUP DE GERENCIAMENTO DE GRUPOS -->
+<div class="group-modal-overlay" *ngIf="showGroupManager">
+    <div class="group-modal">
+        <h3>Gerenciar Grupos</h3>
+        <ul>
+            <li *ngFor="let group of groups; let i = index">
+                <span *ngIf="editedGroupIndex !== i" (click)="editGroup(i)">
+                    {{ group }}
+                </span>
+
+                <input *ngIf="editedGroupIndex === i"
+                    [(ngModel)]="editedGroupName"
+                    (blur)="confirmEdit(i)"
+                    (keydown.enter)="confirmEdit(i)"
+                    #inputRef />
+
+                <button class="remove-btn"
+                    (click)="removeGroup(i)">Remover</button>
+            </li>
+        </ul>
+        <input [(ngModel)]="newGroup" placeholder="Novo grupo" />
+        <div class="actions">
+            <button class="add-btn" (click)="addGroup()">Adicionar
+                grupo</button>
+            <button class="close-btn"
+                (click)="closeGroupManager()">Salvar e fechar</button>
+        </div>
+    </div>
+</div>

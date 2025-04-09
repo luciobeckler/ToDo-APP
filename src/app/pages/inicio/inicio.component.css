@@ -40,6 +40,10 @@
   text-align: center;
 }
 
+.task-table td:hover {
+  cursor: pointer;
+}
+
 .task-table th {
   color: white;
   font-weight: 500;
@@ -49,8 +53,8 @@
   background-color: #f5f8fa;
 }
 
-.task-table tr:hover {
-  background-color: #c9a2ff;
+.task-table tbody tr:hover {
+  background-color: #dbdbdb;
   color: #000000;
 }
 
@@ -78,20 +82,30 @@
   width: 5%;
 }
 
-/* TOOLBAR */
-.toolbar {
-  display: flex;
-  justify-content: flex-end;
-  padding: 1rem;
+/* BOTÃO NOVA TAREFA */
+.nova-tarefa-button {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 20;
 }
 
-.toolbar button {
+.nova-tarefa-button button {
   background-color: #6414d2;
   color: white;
   border: none;
-  padding: 0.5rem 1rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 16px;
+  font-weight: bold;
   border-radius: 6px;
   cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.2s ease;
+}
+
+.nova-tarefa-button button:hover {
+  background-color: #7e2ce0;
+  transform: scale(1.03);
 }
 
 /* MODAL BACKDROP */
