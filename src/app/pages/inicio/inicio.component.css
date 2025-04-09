@@ -17,7 +17,7 @@
 }
 
 .column .header {
-  font-weight: bold;
+  font-weight: 500;
   margin-bottom: 1rem;
   font-size: 1.2rem;
   border-bottom: 2px solid #f1ac38;
@@ -32,14 +32,20 @@
 
 .task-table th,
 .task-table td {
-  border: 1px solid #e0e0e0;
-  padding: 0.75rem;
+  border: none;
+  border-bottom: 1px solid #ddd;
+  padding: 8px;
   text-align: left;
+}
+
+.task-table td.info-cell {
+  text-align: center;
 }
 
 .task-table th {
   background-color: #6414d2;
   color: white;
+  font-weight: 500;
 }
 
 .task-table tr:nth-child(even) {
@@ -49,6 +55,27 @@
 .task-table tr:hover {
   background-color: #c9a2ff;
   color: #000000;
+}
+
+.task-table th:nth-child(1),
+.task-table td:nth-child(1) {
+  width: 40%;
+}
+
+.task-table th:nth-child(2),
+.task-table td:nth-child(2),
+.task-table th:nth-child(3),
+.task-table td:nth-child(3),
+.task-table th:nth-child(4),
+.task-table td:nth-child(4),
+.task-table th:nth-child(5),
+.task-table td:nth-child(5) {
+  width: 12%;
+}
+
+.task-table th:nth-child(6),
+.task-table td:nth-child(6) {
+  width: 5%;
 }
 
 /* PARA O MODAL E BOTÃO DE ADICIONAR NOVA TASK */
@@ -123,4 +150,63 @@ td select {
   padding: 0;
   margin: 0;
   outline: none;
+}
+
+/* MODAL DE INFO DA TAREFA */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.modal {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  min-width: 300px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+}
+
+.modal h3 {
+  margin-top: 0;
+}
+
+.modal label {
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.modal input,
+.modal select {
+  width: 100%;
+  padding: 0.25rem;
+  margin-top: 0.25rem;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
+}
+
+.modal-buttons .danger {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+
+.modal-buttons button {
+  background-color: #55ce61;
+  border: none;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
 }
