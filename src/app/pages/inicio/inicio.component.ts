@@ -9,44 +9,71 @@ import { Task, TaskType } from '../../models/task.model';
 export class InicioComponent {
   showModal = false;
   taskTypes: TaskType[] = ['Em progresso', 'Em espera', 'Não iniciado', 'Finalizado'];
+  taskGroups: string[] = ['Trabalho', 'Pessoal', 'Hobby', 'Outros'];
   editingField: { task: Task, field: keyof Task } | null = null;
   selectedTask: Task | null = null;
 
   tasks: Task[] = [
     {
+      id: 1,
       title: 'Tela de criar mensagens padrão',
+      description: 'Implementar layout e lógica para mensagens pré-definidas',
       group: 'Trabalho',
+      groupId: 5,
       priority: 'Normal',
       startDateTime: '2025-04-05',
       endDateTime: '2025-04-10',
       type: 'Não iniciado'
     },
     {
-      title: 'Tela de criar mensagens padrão',
-      group: 'Trabalho',
-      priority: 'Normal',
-      startDateTime: '2025-04-05',
-      endDateTime: '2025-04-10',
-      type: 'Não iniciado'
-    },
-    {
+      id: 2,
       title: 'Planejamento da plataforma web',
+      description: 'Criar wireframes e definir tecnologias',
       group: 'Trabalho',
+      groupId: 5,
+      priority: 'Alta',
+      startDateTime: '2025-04-01',
+      endDateTime: '2025-04-15',
+      type: 'Em progresso'
+    },
+    {
+      id: 3,
+      title: 'Viagem ao interior',
+      description: 'Organizar documentos e planejar roteiro',
+      group: 'Outros',
+      groupId: 7,
+      priority: 'Normal',
+      startDateTime: '2025-04-20',
+      endDateTime: '2025-04-25',
+      type: 'Não iniciado'
+    },
+    {
+      id: 4,
+      title: 'Melhorias visuais',
+      description: 'Ajustes de UI e UX com base em feedbacks',
+      group: 'Trabalho',
+      groupId: 5,
+      priority: 'Baixa',
+      type: 'Finalizado'
+    },
+    {
+      id: 5,
+      title: 'Yoga semanal',
+      description: 'Aula de yoga toda segunda às 7h',
+      group: 'Pessoal',
+      groupId: 6,
       priority: 'Normal',
       type: 'Em progresso'
     },
     {
-      title: 'Melhorias visuais',
-      group: 'Trabalho',
-      priority: 'Normal',
-      type: 'Finalizado'
-    },
-    {
-      title: 'Melhorias visuais',
-      group: 'Trabalho',
-      priority: 'Normal',
-      type: 'Finalizado'
-    },
+      id: 6,
+      title: 'Reorganizar a estante de livros',
+      description: 'Separar por gênero e ordem alfabética',
+      group: 'Hobby',
+      groupId: 8,
+      priority: 'Baixa',
+      type: 'Não iniciado'
+    }
   ];
 
   getTasksByType(type: TaskType) {
@@ -57,6 +84,10 @@ export class InicioComponent {
       .sort((a, b) => {
         return priorityOrder[a.priority] - priorityOrder[b.priority]; // REGRA PARA ORDENAR POR PRIORIDADE
       });
+  }
+
+  onStatusChange(task: Task): void {
+    this.editingField = null;
   }
 
   // BOTÃO ADICIONAR E SEU POPUP
@@ -114,7 +145,6 @@ export class InicioComponent {
 
       if (start && end && end < start) {
         alert('A data de fim não pode ser menor que a de início.');
-        // Reverte o valor alterado
         if (field === 'endDateTime') {
           task.endDateTime = '';
         } else if (field === 'startDateTime') {
@@ -127,4 +157,36 @@ export class InicioComponent {
     this.editingField = null;
   }
 
+  // CORES POR BLOCO DE STATUS
+  getColorByType(type: string): string {
+    switch (type) {
+      case 'Em progresso':
+        return '#2ecc71';
+      case 'Não iniciado':
+        return '#3498db';
+      case 'Finalizado':
+        return '#7f8c8d';
+      case 'Em espera':
+      default:
+        return '#f1ac38';
+    }
+  }
+
+  getColumnStyle(type: string): { [key: string]: string } {
+    return {
+      borderLeft: `5px solid ${this.getColorByType(type)}`
+    };
+  }
+
+  getHeaderStyle(type: string): { [key: string]: string } {
+    return {
+      borderBottom: `2px solid ${this.getColorByType(type)}`
+    };
+  }
+
+  getTheadStyle(type: string): { [key: string]: string } {
+    return {
+      backgroundColor: this.getColorByType(type)
+    };
+  }
 }
