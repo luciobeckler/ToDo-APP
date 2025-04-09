@@ -1,0 +1,70 @@
+<div class="toolbar">
+    <button (click)="showModal = true">+ Nova Tarefa</button>
+</div>
+
+<div class="board">
+    <ng-container *ngFor="let type of taskTypes">
+        <div class="column" *ngIf="getTasksByType(type).length > 0">
+            <!-- Caso não houver nenhuma tarefa no bloco, 
+            ele não será renderizado -->
+            <div class="header">{{ type }}</div>
+            <table class="task-table">
+                <thead>
+                    <tr>
+                        <th>Título</th>
+                        <th>Grupo</th>
+                        <th>Início</th>
+                        <th>Fim</th>
+                        <th>Prioridade</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let task of getTasksByType(type)">
+                        <td>{{ task.title }}</td>
+                        <td>{{ task.group }}</td>
+                        <td>{{ task.startDateTime | date: 'dd/MM/yyyy' }}</td>
+                        <td>{{ task.endDateTime | date: 'dd/MM/yyyy' }}</td>
+                        <td>{{ task.priority }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </ng-container>
+</div>
+
+<div class="modal-backdrop" *ngIf="showModal">
+    <div class="modal">
+        <h2>Criar Nova Tarefa</h2>
+        <form (ngSubmit)="addTask()" #taskForm="ngForm">
+            <label>Título: <input [(ngModel)]="newTask.title" name="title"
+                    required /></label>
+            <label>Grupo: <input [(ngModel)]="newTask.group" name="group"
+                    required /></label>
+            <label>Início: <input type="date"
+                    [(ngModel)]="newTask.startDateTime"
+                    name="startDateTime" /></label>
+            <label>Fim: <input type="date" [(ngModel)]="newTask.endDateTime"
+                    name="endDateTime" /></label>
+            <label>Prioridade:
+                <select [(ngModel)]="newTask.priority" name="priority" required>
+                    <option value="Alta">Alta</option>
+                    <option value="Normal">Normal</option>
+                    <option value="Baixa">Baixa</option>
+                </select>
+            </label>
+            <label>Status:
+                <select [(ngModel)]="newTask.type" name="type" required>
+                    <option *ngFor="let type of taskTypes" [value]="type">{{
+                        type }}</option>
+                </select>
+            </label>
+
+            <div class="modal-actions">
+                <button type="submit"
+                    [disabled]="!taskForm.form.valid">Salvar</button>
+                <button type="button"
+                    (click)="showModal = false">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
