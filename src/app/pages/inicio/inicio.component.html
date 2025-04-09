@@ -1,5 +1,5 @@
 <div class="toolbar">
-    <button (click)="showModal = true">+ Nova Tarefa</button>
+    <button (click)="showModal = true">+ Nova tarefa</button>
 </div>
 
 <div class="board">
@@ -20,11 +20,92 @@
                 </thead>
                 <tbody>
                     <tr *ngFor="let task of getTasksByType(type)">
-                        <td>{{ task.title }}</td>
-                        <td>{{ task.group }}</td>
-                        <td>{{ task.startDateTime | date: 'dd/MM/yyyy' }}</td>
-                        <td>{{ task.endDateTime | date: 'dd/MM/yyyy' }}</td>
-                        <td>{{ task.priority }}</td>
+                        <!-- Título -->
+                        <td (click)="editingField = { task, field: 'title' }">
+                            <ng-container
+                                *ngIf="editingField?.task !== task || editingField?.field !== 'title'; else titleEdit">
+                                {{ task.title }}
+                            </ng-container>
+                            <ng-template #titleEdit>
+                                <input
+                                    [(ngModel)]="task.title"
+                                    (blur)="editingField = null"
+                                    autofocus />
+                            </ng-template>
+                        </td>
+
+                        <!-- Grupo -->
+                        <td (click)="editingField = { task, field: 'group' }">
+                            <ng-container
+                                *ngIf="editingField?.task !== task || editingField?.field !== 'group'; else groupEdit">
+                                {{ task.group }}
+                            </ng-container>
+                            <ng-template #groupEdit>
+                                <select
+                                    [(ngModel)]="task.group"
+                                    (blur)="editingField = null"
+                                    (change)="editingField = null"
+                                    autofocus>
+                                    <option value="Trabalho">Trabalho</option>
+                                    <option value="Pessoal">Pessoal</option>
+                                    <option value="Outro">Outro</option>
+                                </select>
+                            </ng-template>
+                        </td>
+
+                        <!-- Início -->
+                        <td
+                            (click)="editingField = { task, field: 'startDateTime' }">
+                            <ng-container
+                                *ngIf="editingField?.task !== task || editingField?.field !== 'startDateTime'; else startEdit">
+                                {{ task.startDateTime ? (task.startDateTime |
+                                date:'dd/MM/yyyy') : '-' }}
+                            </ng-container>
+                            <ng-template #startEdit>
+                                <input
+                                    type="date"
+                                    [(ngModel)]="task.startDateTime"
+                                    (blur)="editingField = null"
+                                    autofocus />
+                            </ng-template>
+                        </td>
+
+                        <!-- Fim -->
+                        <td
+                            (click)="editingField = { task, field: 'endDateTime' }">
+                            <ng-container
+                                *ngIf="editingField?.task !== task || editingField?.field !== 'endDateTime'; else endEdit">
+                                {{ task.endDateTime ? (task.endDateTime |
+                                date:'dd/MM/yyyy') : '-' }}
+                            </ng-container>
+                            <ng-template #endEdit>
+                                <input
+                                    type="date"
+                                    [(ngModel)]="task.endDateTime"
+                                    (blur)="editingField = null"
+                                    autofocus />
+                            </ng-template>
+                        </td>
+
+                        <!-- Prioridade -->
+                        <td
+                            (click)="editingField = { task, field: 'priority' }">
+                            <ng-container
+                                *ngIf="editingField?.task !== task || editingField?.field !== 'priority'; else priorityEdit">
+                                {{ task.priority }}
+                            </ng-container>
+                            <ng-template #priorityEdit>
+                                <select
+                                    [(ngModel)]="task.priority"
+                                    (blur)="editingField = null"
+                                    (change)="editingField = null"
+                                    autofocus>
+                                    <option value="Alta">Alta</option>
+                                    <option value="Normal">Normal</option>
+                                    <option value="Baixa">Baixa</option>
+                                </select>
+                            </ng-template>
+                        </td>
                     </tr>
                 </tbody>
             </table>
@@ -34,7 +115,7 @@
 
 <div class="modal-backdrop" *ngIf="showModal">
     <div class="modal">
-        <h2>Criar Nova Tarefa</h2>
+        <h2>Criar nova tarefa</h2>
         <form (ngSubmit)="addTask()" #taskForm="ngForm">
             <label>Título: <input [(ngModel)]="newTask.title" name="title"
                     required /></label>

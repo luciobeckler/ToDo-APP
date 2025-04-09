@@ -9,6 +9,7 @@ import { Task, TaskType } from '../../models/task.model';
 export class InicioComponent {
   showModal = false;
   taskTypes: TaskType[] = ['Em progresso', 'Em espera', 'Não iniciado', 'Finalizado'];
+  editingField: { task: Task, field: keyof Task } | null = null;
 
   tasks: Task[] = [
     {
@@ -50,6 +51,8 @@ export class InicioComponent {
   getTasksByType(type: TaskType) {
     return this.tasks.filter(task => task.type === type);
   }
+
+  //Lógica do botão e popup de adicionar
 
   newTask: Task = {
     title: '',
