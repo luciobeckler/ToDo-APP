@@ -1,88 +1,49 @@
-import { Component } from '@angular/core';
-import { Task, TaskType } from '../../models/task.model';
+import { Component, OnInit } from '@angular/core';
+import { Task, TaskType, TaskPriority } from '../../models/task.model';
+import { TaskService } from '../../services/task.service';
 
 @Component({
   selector: 'app-inicio',
   templateUrl: './inicio.component.html',
   styleUrls: ['./inicio.component.css'],
 })
-export class InicioComponent {
+export class InicioComponent implements OnInit {
   showModal = false;
   taskTypes: TaskType[] = ['Em progresso', 'Em espera', 'Não iniciado', 'Finalizado'];
   taskGroups: string[] = ['Trabalho', 'Pessoal', 'Hobby', 'Outros'];
   editingField: { task: Task, field: keyof Task } | null = null;
   selectedTask: Task | null = null;
+  tasks: Task[] = [];
 
-  tasks: Task[] = [
-    {
-      id: 1,
-      title: 'Tela de criar mensagens padrão',
-      description: 'Implementar layout e lógica para mensagens pré-definidas',
-      group: 'Trabalho',
-      groupId: 5,
-      priority: 'Normal',
-      startDateTime: '2025-04-05',
-      endDateTime: '2025-04-10',
-      type: 'Não iniciado'
-    },
-    {
-      id: 2,
-      title: 'Planejamento da plataforma web',
-      description: 'Criar wireframes e definir tecnologias',
-      group: 'Trabalho',
-      groupId: 5,
-      priority: 'Alta',
-      startDateTime: '2025-04-01',
-      endDateTime: '2025-04-15',
-      type: 'Em progresso'
-    },
-    {
-      id: 3,
-      title: 'Viagem ao interior',
-      description: 'Organizar documentos e planejar roteiro',
-      group: 'Outros',
-      groupId: 7,
-      priority: 'Normal',
-      startDateTime: '2025-04-20',
-      endDateTime: '2025-04-25',
-      type: 'Não iniciado'
-    },
-    {
-      id: 4,
-      title: 'Melhorias visuais',
-      description: 'Ajustes de UI e UX com base em feedbacks',
-      group: 'Trabalho',
-      groupId: 5,
-      priority: 'Baixa',
-      type: 'Finalizado'
-    },
-    {
-      id: 5,
-      title: 'Yoga semanal',
-      description: 'Aula de yoga toda segunda às 7h',
-      group: 'Pessoal',
-      groupId: 6,
-      priority: 'Normal',
-      type: 'Em progresso'
-    },
-    {
-      id: 6,
-      title: 'Reorganizar a estante de livros',
-      description: 'Separar por gênero e ordem alfabética',
-      group: 'Hobby',
-      groupId: 8,
-      priority: 'Baixa',
-      type: 'Não iniciado'
-    }
-  ];
+  constructor(private taskService: TaskService) { }
+
+  ngOnInit() {
+    this.loadTasks();
+  }
+
+  loadTasks() {
+    this.taskService.getTasks().subscribe({
+      next: (data) => {
+        this.tasks = data;
+        console.log('Tasks carregadas:', data);
+      },
+      error: (err) => {
+        console.error('Erro ao carregar tasks:', err);
+      }
+    });
+  }
 
   getTasksByType(type: TaskType) {
-    const priorityOrder = { 'Alta': 1, 'Normal': 2, 'Baixa': 3 };
+    const priorityOrder: { [key in TaskPriority]: number } = {
+      'Alta': 1,
+      'Normal': 2,
+      'Baixa': 3
+    }; // REGRA PARA ORDENAR POR PRIORIDADE
 
     return this.tasks
-      .filter(task => task.type === type)
+      .filter(task => task.status === type)
       .sort((a, b) => {
-        return priorityOrder[a.priority] - priorityOrder[b.priority]; // REGRA PARA ORDENAR POR PRIORIDADE
+        return priorityOrder[a.priority as TaskPriority] - priorityOrder[b.priority as TaskPriority];
       });
   }
 
@@ -93,37 +54,37 @@ export class InicioComponent {
   // BOTÃO ADICIONAR E SEU POPUP
   newTask: Task = {
     title: '',
+    description: '',
     group: 'Trabalho',
     priority: 'Normal',
     startDateTime: '',
     endDateTime: '',
-    type: 'Não iniciado',
+    status: 'Não iniciado',
   };
 
   addTask() {
-    if (this.newTask.startDateTime && this.newTask.endDateTime) {
-      const start = new Date(this.newTask.startDateTime);
-      const end = new Date(this.newTask.endDateTime);
-
-      if (end < start) {
-        alert('A data de fim não pode ser menor que a data de início.');
-        return;
+    this.taskService.addTask(this.newTask).subscribe({
+      next: (addTask) => {
+        this.tasks.push(addTask);
+        this.showModal = false;
+        this.resetForm();
+      },
+      error: (error) => {
+        console.error('Erro ao adicionar task:', error);
       }
-    }
-
-    this.tasks.push({ ...this.newTask });
-    this.resetForm();
-    this.showModal = false;
+    });
   }
+
 
   resetForm() {
     this.newTask = {
       title: '',
+      description: '',
       group: 'Trabalho',
       priority: 'Normal',
       startDateTime: '',
       endDateTime: '',
-      type: 'Não iniciado',
+      status: 'Não iniciado',
     };
   }
 
@@ -133,8 +94,11 @@ export class InicioComponent {
   }
 
   deleteTask(taskToDelete: Task) {
-    this.tasks = this.tasks.filter(t => t !== taskToDelete);
-    this.selectedTask = null;
+    if (!taskToDelete.id) return;
+    this.taskService.deleteTask(taskToDelete.id).subscribe(() => {
+      this.tasks = this.tasks.filter(t => t !== taskToDelete);
+      this.selectedTask = null;
+    });
   }
 
   // REGRA PARA EDITAR DENTRO DA TABELA: NÃO PODE TER FINAL ANTES DE ÍNICIO NEM O OPOSTO
@@ -154,7 +118,9 @@ export class InicioComponent {
       }
     }
 
-    this.editingField = null;
+    this.taskService.updateTask(task).subscribe(() => {
+      this.editingField = null;
+    });
   }
 
   // CORES POR BLOCO DE STATUS

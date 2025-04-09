@@ -6,10 +6,10 @@ export interface Task {
     id?: number;
     title: string;
     description?: string;
+    status: string;
+    priority: string;
     startDateTime?: string;
     endDateTime?: string;
-    priority: TaskPriority;
-    group: TaskGroup;
-    type: TaskType;
     groupId?: number;
+    group?: string;
 }

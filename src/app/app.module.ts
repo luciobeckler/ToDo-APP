@@ -3,6 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { HttpClientModule } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
 import { InicioComponent } from './pages/inicio/inicio.component';
@@ -17,11 +18,12 @@ import { MenuComponent } from './components/menu/menu.component';
     imports: [
         BrowserModule,
         FormsModule,
-        MatIconModule
+        MatIconModule,
+        HttpClientModule
     ],
     providers: [
-    provideAnimationsAsync('noop')
-  ],
+        provideAnimationsAsync('noop')
+    ],
     bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -40,13 +40,13 @@
                         </td>
 
                         <!-- Status -->
-                        <td (click)="editingField = { task, field: 'type' }">
+                        <td (click)="editingField = { task, field: 'status' }">
                             <ng-container
-                                *ngIf="editingField?.task !== task || editingField?.field !== 'type'; else statusEdit">
-                                {{ task.type }}
+                                *ngIf="editingField?.task !== task || editingField?.field !== 'status'; else statusEdit">
+                                {{ task.status }}
                             </ng-container>
                             <ng-template #statusEdit>
-                                <select [(ngModel)]="task.type"
+                                <select [(ngModel)]="task.status"
                                     (change)="onStatusChange(task)"
                                     (blur)="editingField = null"
                                     autofocus>
@@ -170,7 +170,7 @@
 
             <label>
                 Status:
-                <select [(ngModel)]="newTask.type" name="type" required>
+                <select [(ngModel)]="newTask.status" name="type" required>
                     <option *ngFor="let type of taskTypes" [value]="type">{{
                         type }}</option>
                 </select>

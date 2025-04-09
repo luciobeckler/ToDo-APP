@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Output, OnInit } from '@angular/core';
+import { GroupService, Group } from '../../services/group.service';
 
 @Component({
   selector: 'app-menu',
@@ -6,29 +7,89 @@ import { Component, EventEmitter, Output, OnInit } from '@angular/core';
   styleUrls: ['./menu.component.css']
 })
 export class MenuComponent implements OnInit {
-  isExpanded = false;
-  groups = ['Grupo A', 'Grupo B', 'Grupo C'];
-  selectedGroup: string = this.groups[0];
-  showGroupManager = false;
-  newGroup: string = '';
+  groups: Group[] = [];
   editedGroupIndex: number | null = null;
-  editedGroupName: string = '';
+  editedGroupTitle: string = '';
+  newGroup: string = '';
+  selectedGroup: Group | null = null;
+
+  isExpanded = false;
+  showGroupManager = false;
 
   @Output() groupSelected = new EventEmitter<string>();
 
+  constructor(private groupService: GroupService) { }
+
   ngOnInit() {
-    this.groupSelected.emit(this.selectedGroup);
+    this.loadGroups();
+  }
+
+  loadGroups() {
+    this.groupService.getGroups().subscribe(data => {
+      this.groups = data;
+    });
+  }
+
+  addGroup() {
+    const trimmedtitle = this.newGroup.trim();
+    if (trimmedtitle) {
+      this.groupService.addGroup(trimmedtitle).subscribe(newGroup => {
+        this.groups.push(newGroup);
+        this.newGroup = '';
+      });
+    }
+  }
+
+  editGroup(index: number) {
+    this.editedGroupIndex = index;
+    this.editedGroupTitle = this.groups[index].title;
+  }
+
+  confirmEdit(index: number) {
+    const updatedTitle = this.editedGroupTitle.trim();
+    const groupToEdit = this.groups[index];
+
+    if (updatedTitle && updatedTitle !== groupToEdit.title) {
+      const updatedGroup: Group = {
+        ...groupToEdit,
+        title: updatedTitle
+      };
+
+      this.groupService.updateGroup(updatedGroup).subscribe(() => {
+        this.groups[index].title = updatedTitle;
+        this.resetEdit();
+      }, error => {
+        console.error('Erro ao atualizar grupo:', error);
+      });
+    } else {
+      this.resetEdit();
+    }
+  }
+
+  removeGroup(index: number) {
+    const groupId = this.groups[index].id;
+
+    this.groupService.deleteGroup(groupId).subscribe(() => {
+      this.groups.splice(index, 1);
+      if (this.editedGroupIndex === index) {
+        this.resetEdit();
+      }
+    });
+  }
+
+  resetEdit() {
+    this.editedGroupIndex = null;
+    this.editedGroupTitle = '';
   }
 
   toggleMenu() {
     this.isExpanded = !this.isExpanded;
   }
 
-  selectGroup(group: string) {
+  onSelectGroup(group: Group) {
     this.selectedGroup = group;
-    this.groupSelected.emit(group);
+    this.groupSelected.emit(group.title);
   }
-
 
   openGroupManager() {
     this.showGroupManager = true;
@@ -37,36 +98,5 @@ export class MenuComponent implements OnInit {
   closeGroupManager() {
     this.showGroupManager = false;
     this.newGroup = '';
-  }
-
-  addGroup() {
-    const trimmed = this.newGroup.trim();
-    if (trimmed && !this.groups.includes(trimmed)) {
-      this.groups.push(trimmed);
-      this.newGroup = '';
-    }
-  }
-
-  removeGroup(index: number) {
-    const wasSelected = this.groups[index] === this.selectedGroup;
-    this.groups.splice(index, 1);
-
-    if (wasSelected) {
-      this.selectedGroup = this.groups[0] || '';
-      this.groupSelected.emit(this.selectedGroup);
-    }
-  }
-  
-  editGroup(index: number) {
-    this.editedGroupIndex = index;
-    this.editedGroupName = this.groups[index];
-  }
-
-  confirmEdit(index: number) {
-    if (this.editedGroupName.trim()) {
-      this.groups[index] = this.editedGroupName.trim();
-    }
-    this.editedGroupIndex = null;
-    this.editedGroupName = '';
   }
 }

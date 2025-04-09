@@ -8,9 +8,9 @@
         <ul>
             <li
                 *ngFor="let group of groups"
-                (click)="selectGroup(group)"
+                (click)="onSelectGroup(group)"
                 [class.selected]="group === selectedGroup">
-                {{ group }}
+                {{ group.title }}
             </li>
         </ul>
 
@@ -25,18 +25,22 @@
         <h3>Gerenciar Grupos</h3>
         <ul>
             <li *ngFor="let group of groups; let i = index">
-                <span *ngIf="editedGroupIndex !== i" (click)="editGroup(i)">
-                    {{ group }}
-                </span>
+                <ng-container *ngIf="editedGroupIndex !== i">
+                    <span (click)="editGroup(i)">
+                        {{ group.title }}
+                    </span>
+                    <button class="remove-btn"
+                        (click)="removeGroup(i)">Remover</button>
+                </ng-container>
 
-                <input *ngIf="editedGroupIndex === i"
-                    [(ngModel)]="editedGroupName"
-                    (blur)="confirmEdit(i)"
-                    (keydown.enter)="confirmEdit(i)"
-                    #inputRef />
+                <ng-container *ngIf="editedGroupIndex === i">
+                    <input *ngIf="editedGroupIndex === i"
+                        [(ngModel)]="editedGroupTitle"
+                        #inputRef />
 
-                <button class="remove-btn"
-                    (click)="removeGroup(i)">Remover</button>
+                    <button (click)="confirmEdit(i)">✔️</button>
+                    <button (click)="resetEdit()">✖️</button>
+                </ng-container>
             </li>
         </ul>
         <input [(ngModel)]="newGroup" placeholder="Novo grupo" />
