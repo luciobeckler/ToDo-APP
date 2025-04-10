@@ -30,21 +30,21 @@
                 <tbody>
                     <tr *ngFor="let task of getTasksByType(type)">
                         <!-- Título -->
-                        <td (click)="editingField = { task, field: 'title' }">
+                        <td data-label="Título"
+                            (click)="editingField = { task, field: 'title' }">
                             <ng-container
                                 *ngIf="editingField?.task !== task || editingField?.field !== 'title'; else titleEdit">
                                 {{ task.title }}
                             </ng-container>
                             <ng-template #titleEdit>
-                                <input
-                                    [(ngModel)]="task.title"
-                                    (blur)="editingField = null"
-                                    autofocus />
+                                <input [(ngModel)]="task.title"
+                                    (blur)="editingField = null" autofocus />
                             </ng-template>
                         </td>
 
                         <!-- Status -->
-                        <td (click)="editingField = { task, field: 'status' }">
+                        <td data-label="Status"
+                            (click)="editingField = { task, field: 'status' }">
                             <ng-container
                                 *ngIf="editingField?.task !== task || editingField?.field !== 'status'; else statusEdit">
                                 {{ task.status }}
@@ -52,8 +52,7 @@
                             <ng-template #statusEdit>
                                 <select [(ngModel)]="task.status"
                                     (change)="onStatusChange(task)"
-                                    (blur)="editingField = null"
-                                    autofocus>
+                                    (blur)="editingField = null" autofocus>
                                     <option *ngFor="let type of taskTypes"
                                         [value]="type">{{ type }}</option>
                                 </select>
@@ -61,7 +60,7 @@
                         </td>
 
                         <!-- Início -->
-                        <td
+                        <td data-label="Início"
                             (click)="editingField = { task, field: 'startDateTime' }">
                             <ng-container
                                 *ngIf="editingField?.task !== task || editingField?.field !== 'startDateTime'; else startEdit">
@@ -69,8 +68,7 @@
                                 date:'dd/MM/yyyy') : '-' }}
                             </ng-container>
                             <ng-template #startEdit>
-                                <input
-                                    type="date"
+                                <input type="date"
                                     [(ngModel)]="task.startDateTime"
                                     (blur)="finishEditing(task, 'startDateTime')"
                                     autofocus />
@@ -78,7 +76,7 @@
                         </td>
 
                         <!-- Fim -->
-                        <td
+                        <td data-label="Fim"
                             (click)="editingField = { task, field: 'endDateTime' }">
                             <ng-container
                                 *ngIf="editingField?.task !== task || editingField?.field !== 'endDateTime'; else endEdit">
@@ -86,8 +84,7 @@
                                 date:'dd/MM/yyyy') : '-' }}
                             </ng-container>
                             <ng-template #endEdit>
-                                <input
-                                    type="date"
+                                <input type="date"
                                     [(ngModel)]="task.endDateTime"
                                     (blur)="finishEditing(task, 'endDateTime')"
                                     autofocus />
@@ -95,15 +92,14 @@
                         </td>
 
                         <!-- Prioridade -->
-                        <td
+                        <td data-label="Prioridade"
                             (click)="editingField = { task, field: 'priority' }">
                             <ng-container
                                 *ngIf="editingField?.task !== task || editingField?.field !== 'priority'; else priorityEdit">
                                 {{ task.priority }}
                             </ng-container>
                             <ng-template #priorityEdit>
-                                <select
-                                    [(ngModel)]="task.priority"
+                                <select [(ngModel)]="task.priority"
                                     (blur)="finishEditing(task, 'priority')"
                                     (change)="finishEditing(task, 'priority')"
                                     autofocus>
@@ -115,7 +111,7 @@
                         </td>
 
                         <!-- Info -->
-                        <td class="info-cell">
+                        <td class="info-cell" data-label="Detalhes">
                             <mat-icon class="info-icon"
                                 (click)="openTaskDetails(task)">info</mat-icon>
                         </td>
