@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Task, TaskType, TaskPriority } from '../../models/task.model';
 import { TaskService } from '../../services/task.service';
+import { GroupService } from '../../services/group.service';
+import { Group } from '../../services/group.service';
 
 @Component({
   selector: 'app-inicio',
@@ -10,25 +12,40 @@ import { TaskService } from '../../services/task.service';
 export class InicioComponent implements OnInit {
   showModal = false;
   taskTypes: TaskType[] = ['Em progresso', 'Em espera', 'Não iniciado', 'Finalizado'];
-  taskGroups: string[] = ['Trabalho', 'Pessoal', 'Hobby', 'Outros'];
-  editingField: { task: Task, field: keyof Task } | null = null;
-  selectedTask: Task | null = null;
+  taskGroups: Group[] = [];
   tasks: Task[] = [];
 
-  constructor(private taskService: TaskService) { }
+  editingField: { task: Task, field: keyof Task } | null = null;
+  selectedTask: Task | null = null;
 
-  ngOnInit() {
+  constructor(
+    private taskService: TaskService,
+    private groupService: GroupService
+  ) { }
+
+  ngOnInit(): void {
     this.loadTasks();
+    this.loadGroups();
   }
 
   loadTasks() {
     this.taskService.getTasks().subscribe({
       next: (data) => {
         this.tasks = data;
-        console.log('Tasks carregadas:', data);
       },
       error: (err) => {
         console.error('Erro ao carregar tasks:', err);
+      }
+    });
+  }
+
+  loadGroups() {
+    this.groupService.getGroups().subscribe({
+      next: (groups) => {
+        this.taskGroups = groups;
+      },
+      error: (err) => {
+        console.error('Erro ao carregar grupos:', err);
       }
     });
   }
@@ -63,6 +80,16 @@ export class InicioComponent implements OnInit {
   };
 
   addTask() {
+    this.newTask.groupId = Number(this.newTask.groupId);
+
+    if (!this.newTask.startDateTime) {
+      delete this.newTask.startDateTime;
+    }
+
+    if (!this.newTask.endDateTime) {
+      delete this.newTask.endDateTime;
+    }
+
     this.taskService.addTask(this.newTask).subscribe({
       next: (addTask) => {
         this.tasks.push(addTask);
@@ -74,7 +101,6 @@ export class InicioComponent implements OnInit {
       }
     });
   }
-
 
   resetForm() {
     this.newTask = {
@@ -93,6 +119,20 @@ export class InicioComponent implements OnInit {
     this.selectedTask = task;
   }
 
+  updateTask() {
+    if (!this.selectedTask) return;
+
+    this.taskService.updateTask(this.selectedTask).subscribe({
+      next: () => {
+        this.selectedTask = null;
+        this.loadTasks();
+      },
+      error: (error) => {
+        console.error('Erro ao atualizar a tarefa:', error);
+      }
+    });
+  }
+
   deleteTask(taskToDelete: Task) {
     if (!taskToDelete.id) return;
     this.taskService.deleteTask(taskToDelete.id).subscribe(() => {
@@ -101,8 +141,8 @@ export class InicioComponent implements OnInit {
     });
   }
 
-  // REGRA PARA EDITAR DENTRO DA TABELA: NÃO PODE TER FINAL ANTES DE ÍNICIO NEM O OPOSTO
-  finishEditing(task: Task, field: keyof Task) {
+  // REGRA PARA EDITAR DENTRO DA TABELA: NÃO PODE TER FINAL ANTES DE ÍNICIO
+  finishEditing(task: Task, field: keyof Task): void {
     if (field === 'endDateTime' || field === 'startDateTime') {
       const start = new Date(task.startDateTime || '');
       const end = new Date(task.endDateTime || '');
@@ -118,8 +158,15 @@ export class InicioComponent implements OnInit {
       }
     }
 
-    this.taskService.updateTask(task).subscribe(() => {
-      this.editingField = null;
+    this.taskService.updateTask(task).subscribe({
+      next: () => {
+        this.editingField = null;
+        this.loadTasks();
+      },
+      error: (error) => {
+        console.error(`Erro ao atualizar o campo '${field}':`, error);
+        alert('Erro ao salvar alteração. Tente novamente.');
+      }
     });
   }
 

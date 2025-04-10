@@ -1,6 +1,6 @@
 <div class="nova-tarefa-button">
     <button (click)="showModal = true">+ Nova tarefa</button>
-  </div>  
+</div>
 
 <div class="board">
     <ng-container *ngFor="let type of taskTypes">
@@ -100,8 +100,8 @@
                             <ng-template #priorityEdit>
                                 <select
                                     [(ngModel)]="task.priority"
-                                    (blur)="editingField = null"
-                                    (change)="editingField = null"
+                                    (blur)="finishEditing(task, 'priority')"
+                                    (change)="finishEditing(task, 'priority')"
                                     autofocus>
                                     <option value="Alta">Alta</option>
                                     <option value="Normal">Normal</option>
@@ -127,38 +127,33 @@
     <div class="modal">
         <h2>Criar nova tarefa</h2>
         <form (ngSubmit)="addTask()" #taskForm="ngForm">
-
             <label>
                 Título:
                 <input [(ngModel)]="newTask.title" name="title" required />
             </label>
-
             <label>
                 Descrição:
                 <textarea [(ngModel)]="newTask.description" name="description"
                     rows="4"></textarea>
             </label>
-
             <label>
                 Grupo:
-                <select [(ngModel)]="newTask.group" name="group" required>
-                    <option *ngFor="let group of taskGroups" [value]="group">{{
-                        group }}</option>
+                <select [(ngModel)]="newTask.groupId" name="groupId" required>
+                    <option *ngFor="let group of taskGroups" [value]="group.id">
+                        {{ group.title }}
+                    </option>
                 </select>
             </label>
-
             <label>
                 Início:
                 <input type="date" [(ngModel)]="newTask.startDateTime"
                     name="startDateTime" />
             </label>
-
             <label>
                 Fim:
                 <input type="date" [(ngModel)]="newTask.endDateTime"
                     name="endDateTime" />
             </label>
-
             <label>
                 Prioridade:
                 <select [(ngModel)]="newTask.priority" name="priority" required>
@@ -167,15 +162,13 @@
                     <option value="Baixa">Baixa</option>
                 </select>
             </label>
-
             <label>
                 Status:
-                <select [(ngModel)]="newTask.status" name="type" required>
+                <select [(ngModel)]="newTask.status" name="status" required>
                     <option *ngFor="let type of taskTypes" [value]="type">{{
                         type }}</option>
                 </select>
             </label>
-
             <div class="modal-buttons">
                 <button type="button" class="danger"
                     (click)="showModal = false">Cancelar</button>
@@ -193,36 +186,31 @@
 <div class="modal-backdrop" *ngIf="selectedTask">
     <div class="modal">
         <h3>Detalhes da Tarefa</h3>
-
         <label>
             Título:
             <input [(ngModel)]="selectedTask.title" />
         </label>
-
         <label>
             Descrição:
             <textarea [(ngModel)]="selectedTask.description"
                 rows="4"></textarea>
         </label>
-
         <label>
             Grupo:
-            <select [(ngModel)]="selectedTask.group">
-                <option *ngFor="let group of taskGroups" [value]="group">{{
-                    group }}</option>
+            <select [(ngModel)]="selectedTask.groupId">
+                <option *ngFor="let group of taskGroups" [value]="group.id">
+                    {{ group.title }}
+                </option>
             </select>
         </label>
-
         <label>
             Início:
             <input type="date" [(ngModel)]="selectedTask.startDateTime" />
         </label>
-
         <label>
             Fim:
             <input type="date" [(ngModel)]="selectedTask.endDateTime" />
         </label>
-
         <label>
             Prioridade:
             <select [(ngModel)]="selectedTask.priority">
@@ -231,11 +219,17 @@
                 <option value="Baixa">Baixa</option>
             </select>
         </label>
-
+        <label>
+            Status:
+            <select [(ngModel)]="selectedTask.status" name="status" required>
+                <option *ngFor="let type of taskTypes" [value]="type">{{
+                    type }}</option>
+            </select>
+        </label>
         <div class="modal-buttons">
             <button class="danger" (click)="deleteTask(selectedTask)">Excluir
                 tarefa</button>
-            <button (click)="selectedTask = null">Salvar e fechar</button>
+            <button (click)="updateTask()">Salvar e fechar</button>
         </div>
     </div>
 </div>
