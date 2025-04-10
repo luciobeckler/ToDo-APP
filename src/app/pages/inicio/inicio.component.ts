@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { Task, TaskType, TaskPriority } from '../../models/task.model';
+import { Task } from '../../models/task.model';
 import { TaskService } from '../../services/task.service';
 import { GroupService } from '../../services/group.service';
 import { Group } from '../../models/group.model';
@@ -12,41 +12,52 @@ import { TaskSharedService } from '../../services/task-shared.service';
 })
 export class InicioComponent implements OnInit {
   showModal = false;
-  taskTypes: TaskType[] = ['Em progresso', 'Em espera', 'Não iniciado', 'Finalizado'];
+  taskTypes: string[] = [
+    'Não iniciado',
+    'Em progresso',
+    'Finalizado',
+    'Cancelado',
+  ];
+  taskPriority: string[] = [
+    'Urg. e imp.',
+    'Urg. mas não imp.',
+    'Imp. mas não urg.',
+    'Não urg. e não imp.',
+  ];
   taskGroups: Group[] = [];
   tasks: Task[] = [];
   activeGroupTitle: string = '';
+  groupId: number | null = null;
 
-  editingField: { task: Task, field: keyof Task } | null = null;
+  editingField: { task: Task; field: keyof Task } | null = null;
   selectedTask: Task | null = null;
 
   constructor(
     private taskService: TaskService,
     private groupService: GroupService,
     private taskSharedService: TaskSharedService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
-    this.taskSharedService.tasks$.subscribe(tasks => {
+    this.taskSharedService.tasks$.subscribe((tasks) => {
       this.tasks = tasks;
       this.selectedTask = null;
     });
 
-    this.taskSharedService.groupTitle$.subscribe(title => {
+    this.taskSharedService.groupTitle$.subscribe((title) => {
       this.activeGroupTitle = title;
     });
+
+    this.taskSharedService.groupId$.subscribe((id) => {
+      this.groupId = id;
+    });
+
     this.loadGroups();
   }
 
   loadTasks() {
-    this.taskService.getTasks().subscribe({
-      next: (data) => {
-        this.tasks = data;
-      },
-      error: (err) => {
-        console.error('Erro ao carregar tasks:', err);
-      }
-    });
+    if (!this.groupId) return;
+    this.loadTasksByGroupId(this.groupId);
   }
 
   loadGroups() {
@@ -60,21 +71,17 @@ export class InicioComponent implements OnInit {
       },
       error: (err) => {
         console.error('Erro ao carregar grupos:', err);
-      }
+      },
     });
   }
 
-  getTasksByType(type: TaskType) {
-    const priorityOrder: { [key in TaskPriority]: number } = {
-      'Alta': 1,
-      'Normal': 2,
-      'Baixa': 3
-    }; // REGRA PARA ORDENAR POR PRIORIDADE
-
+  getTasksByType(type: string): Task[] {
     return this.tasks
-      .filter(task => task.status === type)
+      .filter((task) => task.status === type)
       .sort((a, b) => {
-        return priorityOrder[a.priority as TaskPriority] - priorityOrder[b.priority as TaskPriority];
+        const aIndex = this.taskPriority.indexOf(a.priority || '');
+        const bIndex = this.taskPriority.indexOf(b.priority || '');
+        return aIndex - bIndex;
       });
   }
 
@@ -85,7 +92,7 @@ export class InicioComponent implements OnInit {
   setActiveGroupTitle(groupId: number | undefined) {
     if (!groupId || !this.taskGroups.length) return;
 
-    const group = this.taskGroups.find(g => g.id === groupId);
+    const group = this.taskGroups.find((g) => g.id === groupId);
     if (group) {
       this.activeGroupTitle = group.title;
     }
@@ -95,10 +102,10 @@ export class InicioComponent implements OnInit {
   newTask: Task = {
     title: '',
     description: '',
-    priority: 'Normal',
+    priority: this.taskPriority[0],
     startDateTime: '',
     endDateTime: '',
-    status: 'Não iniciado',
+    status: this.taskTypes[0],
   };
 
   addTask() {
@@ -122,7 +129,7 @@ export class InicioComponent implements OnInit {
       },
       error: (error) => {
         console.error('Erro ao adicionar task:', error);
-      }
+      },
     });
   }
 
@@ -130,10 +137,10 @@ export class InicioComponent implements OnInit {
     this.newTask = {
       title: '',
       description: '',
-      priority: 'Normal',
+      priority: this.taskPriority[0],
       startDateTime: '',
       endDateTime: '',
-      status: 'Não iniciado',
+      status: this.taskTypes[0],
     };
   }
 
@@ -144,22 +151,40 @@ export class InicioComponent implements OnInit {
 
   updateTask() {
     if (!this.selectedTask) return;
-
-    this.taskService.updateTask(this.selectedTask).subscribe({
+    const updatedTask = { ...this.selectedTask };
+    this.taskService.updateTask(updatedTask).subscribe({
       next: () => {
         this.selectedTask = null;
-        this.loadTasks();
+        this.showModal = false;
+
+        this.taskSharedService.groupId$.subscribe((currentGroupId) => {
+          if (currentGroupId !== null) {
+            this.loadTasksByGroupId(currentGroupId);
+          }
+        });
       },
       error: (error) => {
         console.error('Erro ao atualizar a tarefa:', error);
-      }
+      },
+    });
+  }
+
+  loadTasksByGroupId(groupId: number) {
+    this.groupService.getGroupById(groupId).subscribe({
+      next: (group) => {
+        this.tasks = group.tasks || [];
+        this.activeGroupTitle = group.title;
+      },
+      error: (error) => {
+        console.error('Erro ao carregar tarefas do grupo:', error);
+      },
     });
   }
 
   deleteTask(taskToDelete: Task) {
     if (!taskToDelete.id) return;
     this.taskService.deleteTask(taskToDelete.id).subscribe(() => {
-      this.tasks = this.tasks.filter(t => t !== taskToDelete);
+      this.tasks = this.tasks.filter((t) => t !== taskToDelete);
       this.selectedTask = null;
     });
   }
@@ -189,40 +214,41 @@ export class InicioComponent implements OnInit {
       error: (error) => {
         console.error(`Erro ao atualizar o campo '${field}':`, error);
         alert('Erro ao salvar alteração. Tente novamente.');
-      }
+      },
     });
   }
 
   // CORES POR BLOCO DE STATUS
   getColorByType(type: string): string {
     switch (type) {
-      case 'Em progresso':
-        return '#2ecc71';
-      case 'Não iniciado':
-        return '#3498db';
-      case 'Finalizado':
-        return '#7f8c8d';
-      case 'Em espera':
+      case this.taskTypes[0]:
+        return '#9CA3AF';
+      case this.taskTypes[1]:
+        return '#3B82F6';
+      case this.taskTypes[2]:
+        return '#10B981';
+      case this.taskTypes[3]:
+        return '#EF4444';
       default:
-        return '#f1ac38';
+        return '#6B7280';
     }
   }
 
   getColumnStyle(type: string): { [key: string]: string } {
     return {
-      borderLeft: `5px solid ${this.getColorByType(type)}`
+      borderLeft: `5px solid ${this.getColorByType(type)}`,
     };
   }
 
   getHeaderStyle(type: string): { [key: string]: string } {
     return {
-      borderBottom: `2px solid ${this.getColorByType(type)}`
+      borderBottom: `2px solid ${this.getColorByType(type)}`,
     };
   }
 
   getTheadStyle(type: string): { [key: string]: string } {
     return {
-      backgroundColor: this.getColorByType(type)
+      backgroundColor: this.getColorByType(type),
     };
   }
 }

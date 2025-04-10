@@ -1,237 +1,327 @@
+<!-- TÍTULO E BOTÃO DE NOVA TAREFA -->
 <div class="titulo-container">
-    <h2 class="titulo-grupo">Tarefas: {{ activeGroupTitle }}</h2>
+  <h2 class="titulo-grupo">Tarefas: {{ activeGroupTitle }}</h2>
 </div>
 
 <div class="nova-tarefa-button">
-    <button (click)="showModal = true">+ Nova tarefa</button>
+  <button (click)="showModal = true">+ Nova tarefa</button>
 </div>
 
+<!-- BOARD DE TAREFAS POR STATUS -->
 <div class="board">
-    <ng-container *ngFor="let type of taskTypes">
-        <div class="column"
-            *ngIf="getTasksByType(type).length > 0"
-            [ngStyle]="getColumnStyle(type)">
-            <!-- Regra: Caso não houver nenhuma tarefa no bloco, 
-            ele não será renderizado -->
-            <div class="header" [ngStyle]="getHeaderStyle(type)">
-                {{ type }}
-            </div>
-            <table class="task-table">
-                <thead [ngStyle]="getTheadStyle(type)">
-                    <tr>
-                        <th>Título</th>
-                        <th>Status</th>
-                        <th>Início</th>
-                        <th>Fim</th>
-                        <th>Prioridade</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let task of getTasksByType(type)">
-                        <!-- Título -->
-                        <td data-label="Título"
-                            (click)="editingField = { task, field: 'title' }">
-                            <ng-container
-                                *ngIf="editingField?.task !== task || editingField?.field !== 'title'; else titleEdit">
-                                {{ task.title }}
-                            </ng-container>
-                            <ng-template #titleEdit>
-                                <input [(ngModel)]="task.title"
-                                    (blur)="editingField = null" autofocus />
-                            </ng-template>
-                        </td>
+  <ng-container *ngFor="let type of taskTypes">
+    <div
+      class="column"
+      *ngIf="getTasksByType(type).length > 0"
+      [ngStyle]="getColumnStyle(type)"
+    >
+      <!-- Cabeçalho da coluna -->
+      <div class="header" [ngStyle]="getHeaderStyle(type)">
+        {{ type }}
+      </div>
 
-                        <!-- Status -->
-                        <td data-label="Status"
-                            (click)="editingField = { task, field: 'status' }">
-                            <ng-container
-                                *ngIf="editingField?.task !== task || editingField?.field !== 'status'; else statusEdit">
-                                {{ task.status }}
-                            </ng-container>
-                            <ng-template #statusEdit>
-                                <select [(ngModel)]="task.status"
-                                    (change)="onStatusChange(task)"
-                                    (blur)="editingField = null" autofocus>
-                                    <option *ngFor="let type of taskTypes"
-                                        [value]="type">{{ type }}</option>
-                                </select>
-                            </ng-template>
-                        </td>
+      <table class="task-table">
+        <thead [ngStyle]="getTheadStyle(type)">
+          <tr>
+            <th>Título</th>
+            <th>Status</th>
+            <th>Início</th>
+            <th>Fim</th>
+            <th>Prioridade</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let task of getTasksByType(type)">
+            <!-- TÍTULO -->
+            <td
+              (click)="editingField = { task, field: 'title' }"
+              data-label="Título"
+            >
+              <ng-container
+                *ngIf="
+                  editingField?.task !== task ||
+                    editingField?.field !== 'title';
+                  else titleEdit
+                "
+              >
+                {{ task.title }}
+              </ng-container>
+              <ng-template #titleEdit>
+                <input
+                  [(ngModel)]="task.title"
+                  (blur)="editingField = null"
+                  autofocus
+                />
+              </ng-template>
+            </td>
 
-                        <!-- Início -->
-                        <td data-label="Início"
-                            (click)="editingField = { task, field: 'startDateTime' }">
-                            <ng-container
-                                *ngIf="editingField?.task !== task || editingField?.field !== 'startDateTime'; else startEdit">
-                                {{ task.startDateTime ? (task.startDateTime |
-                                date:'dd/MM/yyyy') : '-' }}
-                            </ng-container>
-                            <ng-template #startEdit>
-                                <input type="date"
-                                    [(ngModel)]="task.startDateTime"
-                                    (blur)="finishEditing(task, 'startDateTime')"
-                                    autofocus />
-                            </ng-template>
-                        </td>
+            <!-- STATUS -->
+            <td
+              (click)="editingField = { task, field: 'status' }"
+              data-label="Status"
+            >
+              <ng-container
+                *ngIf="
+                  editingField?.task !== task ||
+                    editingField?.field !== 'status';
+                  else statusEdit
+                "
+              >
+                {{ task.status }}
+              </ng-container>
+              <ng-template #statusEdit>
+                <select
+                  [(ngModel)]="task.status"
+                  (change)="onStatusChange(task)"
+                  (blur)="editingField = null"
+                  autofocus
+                >
+                  <option *ngFor="let type of taskTypes" [value]="type">
+                    {{ type }}
+                  </option>
+                </select>
+              </ng-template>
+            </td>
 
-                        <!-- Fim -->
-                        <td data-label="Fim"
-                            (click)="editingField = { task, field: 'endDateTime' }">
-                            <ng-container
-                                *ngIf="editingField?.task !== task || editingField?.field !== 'endDateTime'; else endEdit">
-                                {{ task.endDateTime ? (task.endDateTime |
-                                date:'dd/MM/yyyy') : '-' }}
-                            </ng-container>
-                            <ng-template #endEdit>
-                                <input type="date"
-                                    [(ngModel)]="task.endDateTime"
-                                    (blur)="finishEditing(task, 'endDateTime')"
-                                    autofocus />
-                            </ng-template>
-                        </td>
+            <!-- INÍCIO -->
+            <td
+              (click)="editingField = { task, field: 'startDateTime' }"
+              data-label="Início"
+            >
+              <ng-container
+                *ngIf="
+                  editingField?.task !== task ||
+                    editingField?.field !== 'startDateTime';
+                  else startEdit
+                "
+              >
+                {{
+                  task.startDateTime
+                    ? (task.startDateTime | date : "dd/MM/yyyy")
+                    : "-"
+                }}
+              </ng-container>
+              <ng-template #startEdit>
+                <input
+                  type="date"
+                  [(ngModel)]="task.startDateTime"
+                  (blur)="finishEditing(task, 'startDateTime')"
+                  autofocus
+                />
+              </ng-template>
+            </td>
 
-                        <!-- Prioridade -->
-                        <td data-label="Prioridade"
-                            (click)="editingField = { task, field: 'priority' }">
-                            <ng-container
-                                *ngIf="editingField?.task !== task || editingField?.field !== 'priority'; else priorityEdit">
-                                {{ task.priority }}
-                            </ng-container>
-                            <ng-template #priorityEdit>
-                                <select [(ngModel)]="task.priority"
-                                    (blur)="finishEditing(task, 'priority')"
-                                    (change)="finishEditing(task, 'priority')"
-                                    autofocus>
-                                    <option value="Alta">Alta</option>
-                                    <option value="Normal">Normal</option>
-                                    <option value="Baixa">Baixa</option>
-                                </select>
-                            </ng-template>
-                        </td>
+            <!-- FIM -->
+            <td
+              (click)="editingField = { task, field: 'endDateTime' }"
+              data-label="Fim"
+            >
+              <ng-container
+                *ngIf="
+                  editingField?.task !== task ||
+                    editingField?.field !== 'endDateTime';
+                  else endEdit
+                "
+              >
+                {{
+                  task.endDateTime
+                    ? (task.endDateTime | date : "dd/MM/yyyy")
+                    : "-"
+                }}
+              </ng-container>
+              <ng-template #endEdit>
+                <input
+                  type="date"
+                  [(ngModel)]="task.endDateTime"
+                  (blur)="finishEditing(task, 'endDateTime')"
+                  autofocus
+                />
+              </ng-template>
+            </td>
 
-                        <!-- Info -->
-                        <td class="info-cell" data-label="Detalhes">
-                            <mat-icon class="info-icon"
-                                (click)="openTaskDetails(task)">info</mat-icon>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </ng-container>
+            <!-- PRIORIDADE -->
+            <td
+              (click)="editingField = { task, field: 'priority' }"
+              data-label="Prioridade"
+            >
+              <ng-container
+                *ngIf="
+                  editingField?.task !== task ||
+                    editingField?.field !== 'priority';
+                  else priorityEdit
+                "
+              >
+                {{ task.priority }}
+              </ng-container>
+              <ng-template #priorityEdit>
+                <select
+                  [(ngModel)]="task.priority"
+                  (blur)="finishEditing(task, 'priority')"
+                  (change)="finishEditing(task, 'priority')"
+                  autofocus
+                >
+                  <option
+                    *ngFor="let priority of taskPriority"
+                    [value]="priority"
+                  >
+                    {{ priority }}
+                  </option>
+                </select>
+              </ng-template>
+            </td>
+
+            <!-- DETALHES -->
+            <td class="info-cell" data-label="Detalhes">
+              <mat-icon class="info-icon" (click)="openTaskDetails(task)"
+                >info</mat-icon
+              >
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </ng-container>
 </div>
 
-<!-- POPUP DE ADICIONAR NOVA TAREFA -->
+<!-- MODAL: CRIAR NOVA TAREFA -->
 <div class="modal-backdrop" *ngIf="showModal">
-    <div class="modal">
-        <h2>Criar nova tarefa</h2>
-        <form (ngSubmit)="addTask()" #taskForm="ngForm">
-            <label>
-                Título:
-                <input [(ngModel)]="newTask.title" name="title" required />
-            </label>
-            <label>
-                Descrição:
-                <textarea [(ngModel)]="newTask.description" name="description"
-                    rows="4"></textarea>
-            </label>
-            <label>
-                Grupo:
-                <select [(ngModel)]="newTask.groupId" name="groupId">
-                    <option [ngValue]="undefined">-- Nenhum grupo --</option>
-                    <option *ngFor="let group of taskGroups"
-                        [ngValue]="group.id">
-                        {{ group.title }}
-                    </option>
-                </select>
-            </label>
-            <label>
-                Início:
-                <input type="date" [(ngModel)]="newTask.startDateTime"
-                    name="startDateTime" />
-            </label>
-            <label>
-                Fim:
-                <input type="date" [(ngModel)]="newTask.endDateTime"
-                    name="endDateTime" />
-            </label>
-            <label>
-                Prioridade:
-                <select [(ngModel)]="newTask.priority" name="priority" required>
-                    <option value="Alta">Alta</option>
-                    <option value="Normal">Normal</option>
-                    <option value="Baixa">Baixa</option>
-                </select>
-            </label>
-            <label>
-                Status:
-                <select [(ngModel)]="newTask.status" name="status" required>
-                    <option *ngFor="let type of taskTypes" [value]="type">{{
-                        type }}</option>
-                </select>
-            </label>
-            <div class="modal-buttons">
-                <button type="button" class="danger"
-                    (click)="showModal = false">Cancelar</button>
-                <button type="submit"
-                    class="save-button"
-                    [disabled]="!taskForm.form.valid">
-                    Salvar
-                </button>
-            </div>
-        </form>
-    </div>
+  <div class="modal">
+    <h2>Criar nova tarefa</h2>
+    <form (ngSubmit)="addTask()" #taskForm="ngForm">
+      <label>
+        Título:
+        <input [(ngModel)]="newTask.title" name="title" required />
+      </label>
+
+      <label>
+        Descrição:
+        <textarea
+          [(ngModel)]="newTask.description"
+          name="description"
+          rows="4"
+        ></textarea>
+      </label>
+
+      <label>
+        Grupo:
+        <select [(ngModel)]="newTask.groupId" name="groupId">
+          <option [ngValue]="undefined">-- Nenhum grupo --</option>
+          <option *ngFor="let group of taskGroups" [ngValue]="group.id">
+            {{ group.title }}
+          </option>
+        </select>
+      </label>
+
+      <label>
+        Início:
+        <input
+          type="date"
+          [(ngModel)]="newTask.startDateTime"
+          name="startDateTime"
+        />
+      </label>
+
+      <label>
+        Fim:
+        <input
+          type="date"
+          [(ngModel)]="newTask.endDateTime"
+          name="endDateTime"
+        />
+      </label>
+
+      <label>
+        Prioridade:
+        <select [(ngModel)]="newTask.priority" name="priority" required>
+          <option *ngFor="let priority of taskPriority" [value]="priority">
+            {{ priority }}
+          </option>
+        </select>
+      </label>
+
+      <label>
+        Status:
+        <select [(ngModel)]="newTask.status" name="status" required>
+          <option *ngFor="let type of taskTypes" [value]="type">
+            {{ type }}
+          </option>
+        </select>
+      </label>
+
+      <div class="modal-buttons">
+        <button type="button" class="danger" (click)="showModal = false">
+          Cancelar
+        </button>
+        <button
+          type="submit"
+          class="save-button"
+          [disabled]="!taskForm.form.valid"
+        >
+          Salvar
+        </button>
+      </div>
+    </form>
+  </div>
 </div>
 
-<!-- POPUP DE EDITAR/EXCLUIR A TAREFA -->
+<!-- MODAL: DETALHES DA TAREFA -->
 <div class="modal-backdrop" *ngIf="selectedTask">
-    <div class="modal">
-        <h3>Detalhes da Tarefa</h3>
-        <label>
-            Título:
-            <input [(ngModel)]="selectedTask.title" />
-        </label>
-        <label>
-            Descrição:
-            <textarea [(ngModel)]="selectedTask.description"
-                rows="4"></textarea>
-        </label>
-        <label>
-            Grupo:
-            <select [(ngModel)]="selectedTask.groupId">
-                <option *ngFor="let group of taskGroups" [value]="group.id">
-                    {{ group.title }}
-                </option>
-            </select>
-        </label>
-        <label>
-            Início:
-            <input type="date" [(ngModel)]="selectedTask.startDateTime" />
-        </label>
-        <label>
-            Fim:
-            <input type="date" [(ngModel)]="selectedTask.endDateTime" />
-        </label>
-        <label>
-            Prioridade:
-            <select [(ngModel)]="selectedTask.priority">
-                <option value="Alta">Alta</option>
-                <option value="Normal">Normal</option>
-                <option value="Baixa">Baixa</option>
-            </select>
-        </label>
-        <label>
-            Status:
-            <select [(ngModel)]="selectedTask.status" name="status" required>
-                <option *ngFor="let type of taskTypes" [value]="type">{{
-                    type }}</option>
-            </select>
-        </label>
-        <div class="modal-buttons">
-            <button class="danger" (click)="deleteTask(selectedTask)">Excluir
-                tarefa</button>
-            <button (click)="updateTask()">Salvar e fechar</button>
-        </div>
+  <div class="modal">
+    <h3>Detalhes da Tarefa</h3>
+
+    <label>
+      Título:
+      <input [(ngModel)]="selectedTask.title" />
+    </label>
+
+    <label>
+      Descrição:
+      <textarea [(ngModel)]="selectedTask.description" rows="4"></textarea>
+    </label>
+
+    <label>
+      Grupo:
+      <select [(ngModel)]="selectedTask.groupId">
+        <option *ngFor="let group of taskGroups" [value]="group.id">
+          {{ group.title }}
+        </option>
+      </select>
+    </label>
+
+    <label>
+      Início:
+      <input type="date" [(ngModel)]="selectedTask.startDateTime" />
+    </label>
+
+    <label>
+      Fim:
+      <input type="date" [(ngModel)]="selectedTask.endDateTime" />
+    </label>
+
+    <label>
+      Prioridade:
+      <select [(ngModel)]="selectedTask.priority">
+        <option *ngFor="let priority of taskPriority" [value]="priority">
+          {{ priority }}
+        </option>
+      </select>
+    </label>
+
+    <label>
+      Status:
+      <select [(ngModel)]="selectedTask.status" name="status" required>
+        <option *ngFor="let type of taskTypes" [value]="type">
+          {{ type }}
+        </option>
+      </select>
+    </label>
+
+    <div class="modal-buttons">
+      <button class="danger" (click)="deleteTask(selectedTask)">
+        Excluir tarefa
+      </button>
+      <button (click)="updateTask()">Salvar e fechar</button>
     </div>
+  </div>
 </div>
