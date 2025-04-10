@@ -2,7 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { Task, TaskType, TaskPriority } from '../../models/task.model';
 import { TaskService } from '../../services/task.service';
 import { GroupService } from '../../services/group.service';
-import { Group } from '../../services/group.service';
+import { Group } from '../../models/group.model';
+import { TaskSharedService } from '../../services/task-shared.service';
+import { Input } from '@angular/core';
 
 @Component({
   selector: 'app-inicio',
@@ -14,17 +16,28 @@ export class InicioComponent implements OnInit {
   taskTypes: TaskType[] = ['Em progresso', 'Em espera', 'Não iniciado', 'Finalizado'];
   taskGroups: Group[] = [];
   tasks: Task[] = [];
+  activeGroupTitle: string = '';
 
   editingField: { task: Task, field: keyof Task } | null = null;
   selectedTask: Task | null = null;
 
+  @Input() selectedGroupId: number | null = null;
+
   constructor(
     private taskService: TaskService,
-    private groupService: GroupService
+    private groupService: GroupService,
+    private taskSharedService: TaskSharedService
   ) { }
 
   ngOnInit(): void {
-    this.loadTasks();
+    this.taskSharedService.tasks$.subscribe(tasks => {
+      this.tasks = tasks;
+      this.selectedTask = null;
+    });
+
+    this.taskSharedService.groupTitle$.subscribe(title => {
+      this.activeGroupTitle = title;
+    });
     this.loadGroups();
   }
 
@@ -43,6 +56,10 @@ export class InicioComponent implements OnInit {
     this.groupService.getGroups().subscribe({
       next: (groups) => {
         this.taskGroups = groups;
+        if (this.tasks.length > 0) {
+          const groupId = this.tasks[0].groupId;
+          this.setActiveGroupTitle(groupId);
+        }
       },
       error: (err) => {
         console.error('Erro ao carregar grupos:', err);
@@ -66,6 +83,15 @@ export class InicioComponent implements OnInit {
 
   onStatusChange(task: Task): void {
     this.editingField = null;
+  }
+
+  setActiveGroupTitle(groupId: number | undefined) {
+    if (!groupId || !this.taskGroups.length) return;
+
+    const group = this.taskGroups.find(g => g.id === groupId);
+    if (group) {
+      this.activeGroupTitle = group.title;
+    }
   }
 
   // BOTÃO ADICIONAR E SEU POPUP

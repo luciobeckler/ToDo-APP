@@ -7,13 +7,18 @@
         <h3>Grupos</h3>
         <ul>
             <li
+                class="no-group"
+                (click)="filterTasksWithoutGroup()"
+                [class.selected]="selectedGroup === null">
+                Sem grupo
+            </li>
+            <li
                 *ngFor="let group of groups"
-                (click)="onSelectGroup(group)"
-                [class.selected]="group === selectedGroup">
+                (click)="filterTasksByGroup(group.id)"
+                [class.selected]="group.id === selectedGroup?.id">
                 {{ group.title }}
             </li>
         </ul>
-
         <button class="manage-button" (click)="openGroupManager()">Gerenciar
             Grupos</button>
     </div>

@@ -1,5 +1,12 @@
 import { Component, EventEmitter, Output, OnInit } from '@angular/core';
-import { GroupService, Group } from '../../services/group.service';
+import { GroupService } from '../../services/group.service';
+import { Group } from '../../models/group.model';
+import { Task } from '../../models/task.model';
+import { TaskSharedService } from '../../services/task-shared.service';
+import { Router } from '@angular/router';
+import { TaskService } from '../../services/task.service';
+
+const NO_GROUP: Group = { id: -1, title: 'Sem grupo' };
 
 @Component({
   selector: 'app-menu',
@@ -11,22 +18,38 @@ export class MenuComponent implements OnInit {
   editedGroupIndex: number | null = null;
   editedGroupTitle: string = '';
   newGroup: string = '';
-  selectedGroup: Group | null = null;
+  selectedGroup: Group | null = NO_GROUP;
 
   isExpanded = false;
   showGroupManager = false;
 
-  @Output() groupSelected = new EventEmitter<string>();
+  @Output() tasksFiltered = new EventEmitter<Task[]>();
+  @Output() groupSelected = new EventEmitter<number>();
 
-  constructor(private groupService: GroupService) { }
+  constructor(
+    private router: Router,
+    private groupService: GroupService,
+    private taskSharedService: TaskSharedService,
+    private taskService: TaskService
+  ) { }
 
   ngOnInit() {
     this.loadGroups();
+    this.filterTasksWithoutGroup(); // REGRA: SELECIONA O "SEM GRUPO" AUTOMATICAMENTE
   }
 
   loadGroups() {
     this.groupService.getGroups().subscribe(data => {
       this.groups = data;
+    });
+  }
+
+  filterTasksByGroup(groupId: number) {
+    this.groupService.getGroupById(groupId).subscribe(group => {
+      this.selectedGroup = group;
+      this.groupSelected.emit(groupId);
+      this.taskSharedService.setTasks(group.tasks || [], group.title);
+      this.router.navigate(['/']);
     });
   }
 
@@ -77,6 +100,17 @@ export class MenuComponent implements OnInit {
     });
   }
 
+  // ALTERNATIVA SEM GRUPO
+  filterTasksWithoutGroup(): void {
+    this.selectedGroup = null;
+    this.taskService.getTasks().subscribe(tasks => {
+      const tasksWithoutGroup = tasks.filter(task => task.groupId == null);
+      this.taskSharedService.setTasks(tasksWithoutGroup, 'Sem grupo');
+      this.router.navigate(['/']);
+    });
+  }
+
+  // POPUP DE GERENCIAR GRUPOS
   resetEdit() {
     this.editedGroupIndex = null;
     this.editedGroupTitle = '';
@@ -84,11 +118,6 @@ export class MenuComponent implements OnInit {
 
   toggleMenu() {
     this.isExpanded = !this.isExpanded;
-  }
-
-  onSelectGroup(group: Group) {
-    this.selectedGroup = group;
-    this.groupSelected.emit(group.title);
   }
 
   openGroupManager() {

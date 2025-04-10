@@ -1,11 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-
-export interface Group {
-  id: number;
-  title: string;
-}
+import { Group } from '../models/group.model';
 
 @Injectable({
   providedIn: 'root'
@@ -19,6 +15,10 @@ export class GroupService {
     return this.http.get<Group[]>(this.baseUrl);
   }
 
+  getGroupById(groupId: number): Observable<Group> {
+    return this.http.get<Group>(`${this.baseUrl}/${groupId}`);
+  }
+
   addGroup(title: string): Observable<Group> {
     return this.http.post<Group>(this.baseUrl, { title });
   }
@@ -29,5 +29,5 @@ export class GroupService {
 
   deleteGroup(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}?id=${id}`);
-  }  
+  }
 }
