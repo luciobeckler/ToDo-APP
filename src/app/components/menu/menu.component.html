@@ -1,61 +1,79 @@
-<div class="sidebar" [class.expanded]="isExpanded">
-    <div class="toggle-button" (click)="toggleMenu()">
-        <mat-icon>menu</mat-icon>
-    </div>
+<div
+  class="sidebar"
+  [class.expanded]="isExpanded"
+  appClickOutside
+  (appClickOutside)="closeMenu()"
+  (click)="$event.stopPropagation()"
+>
+  <div class="toggle-button" (click)="toggleMenu()">
+    <mat-icon>menu</mat-icon>
+  </div>
 
-    <div class="group-list" *ngIf="isExpanded">
-        <ul>
-            <li
-                class="no-group"
-                (click)="filterTasksWithoutGroup()"
-                [class.selected]="selectedGroup === null">
-                Sem grupo
-            </li>
-            <li
-                *ngFor="let group of groups"
-                (click)="filterTasksByGroup(group.id)"
-                [class.selected]="group.id === selectedGroup?.id">
-                {{ group.title }}
-            </li>
-        </ul>
-        <button class="manage-button" (click)="openGroupManager()">Gerenciar
-            grupos</button>
-    </div>
+  <div class="group-list" *ngIf="isExpanded">
+    <ul>
+      <li
+        class="no-group"
+        (click)="filterTasksWithoutGroup()"
+        [class.selected]="selectedGroup === null"
+      >
+        Sem grupo
+      </li>
+      <li
+        *ngFor="let group of groups"
+        (click)="filterTasksByGroup(group.id)"
+        [class.selected]="group.id === selectedGroup?.id"
+      >
+        {{ group.title }}
+      </li>
+    </ul>
+    <button class="manage-button" (click)="openGroupManager()">
+      Gerenciar grupos
+    </button>
+  </div>
 </div>
 
 <!-- POPUP DE GERENCIAMENTO DE GRUPOS -->
 <div class="group-modal-overlay" *ngIf="showGroupManager">
-    <div class="group-modal">
-        <h3>Gerenciar grupos</h3>
-        <ul>
-            <li *ngFor="let group of groups; let i = index">
-                <ng-container *ngIf="editedGroupIndex !== i">
-                    <span (click)="editGroup(i)">
-                        {{ group.title }}
-                    </span>
-                    <button class="remove-btn"
-                        (click)="removeGroup(i)">Remover</button>
-                </ng-container>
+  <div
+    class="group-modal"
+    appClickOutside
+    (appClickOutside)="closeGroupManager()"
+    (click)="$event.stopPropagation()"
+  >
+    <h3>Gerenciar grupos</h3>
+    <ul>
+      <li *ngFor="let group of groups; let i = index">
+        <ng-container *ngIf="editedGroupIndex !== i">
+          <span (click)="editGroup(i)">
+            {{ group.title }}
+          </span>
+          <button class="remove-btn" (click)="removeGroup(i)">Remover</button>
+        </ng-container>
 
-                <ng-container *ngIf="editedGroupIndex === i">
-                    <input *ngIf="editedGroupIndex === i"
-                        [(ngModel)]="editedGroupTitle"
-                        #inputRef />
+        <ng-container *ngIf="editedGroupIndex === i">
+          <input
+            *ngIf="editedGroupIndex === i"
+            [(ngModel)]="editedGroupTitle"
+            #inputRef
+          />
 
-                    <button (click)="confirmEdit(i)">✔️</button>
-                    <button (click)="resetEdit()">✖️</button>
-                </ng-container>
-            </li>
-        </ul>
-        <input [(ngModel)]="newGroup" placeholder="Novo grupo" />
-        <div class="actions">
-            <button class="add-btn"
-                (click)="addGroup()"
-                [disabled]="!newGroup.trim()">
-                Adicionar grupo
-            </button>
-            <button class="close-btn"
-                (click)="closeGroupManager()">Salvar e fechar</button>
-        </div>
+          <button (click)="confirmEdit(i)">✔️</button>
+          <button (click)="resetEdit()">✖️</button>
+        </ng-container>
+      </li>
+    </ul>
+    <input [(ngModel)]="newGroup" placeholder="Novo grupo" />
+    <div class="actions">
+      <button
+        class="add-btn"
+        (click)="addGroup()"
+        [disabled]="!newGroup.trim()"
+      >
+        Adicionar grupo
+      </button>
+      <button class="close-btn" (click)="closeGroupManager()">
+        Salvar e fechar
+      </button>
     </div>
+  </div>
 </div>

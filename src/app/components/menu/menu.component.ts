@@ -4,13 +4,15 @@ import { Group } from '../../models/group.model';
 import { TaskSharedService } from '../../services/task-shared.service';
 import { Router } from '@angular/router';
 import { TaskService } from '../../services/task.service';
+import { cwd } from 'process';
+import { log } from 'console';
 
 const NO_GROUP: Group = { id: -1, title: 'Sem grupo' };
 
 @Component({
   selector: 'app-menu',
   templateUrl: './menu.component.html',
-  styleUrls: ['./menu.component.css']
+  styleUrls: ['./menu.component.css'],
 })
 export class MenuComponent implements OnInit {
   groups: Group[] = [];
@@ -29,7 +31,7 @@ export class MenuComponent implements OnInit {
     private groupService: GroupService,
     private taskSharedService: TaskSharedService,
     private taskService: TaskService
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.loadGroups();
@@ -37,15 +39,16 @@ export class MenuComponent implements OnInit {
   }
 
   loadGroups() {
-    this.groupService.getGroups().subscribe(data => {
+    this.groupService.getGroups().subscribe((data) => {
       this.groups = data;
     });
   }
 
   filterTasksByGroup(groupId: number) {
-    this.groupService.getGroupById(groupId).subscribe(group => {
+    this.groupService.getGroupById(groupId).subscribe((group) => {
       this.selectedGroup = group;
       this.groupSelected.emit(groupId);
+      this.taskSharedService.setGroupId(groupId);
       this.taskSharedService.setTasks(group.tasks || [], group.title);
       this.router.navigate(['/']);
     });
@@ -54,8 +57,8 @@ export class MenuComponent implements OnInit {
   // ALTERNATIVA SEM GRUPO
   filterTasksWithoutGroup(): void {
     this.selectedGroup = null;
-    this.taskService.getTasks().subscribe(tasks => {
-      const tasksWithoutGroup = tasks.filter(task => task.groupId == null);
+    this.taskService.getTasks().subscribe((tasks) => {
+      const tasksWithoutGroup = tasks.filter((task) => task.groupId == null);
       this.taskSharedService.setTasks(tasksWithoutGroup, 'Sem grupo');
       this.router.navigate(['/']);
     });
@@ -64,7 +67,7 @@ export class MenuComponent implements OnInit {
   addGroup() {
     const trimmedtitle = this.newGroup.trim();
     if (trimmedtitle) {
-      this.groupService.addGroup(trimmedtitle).subscribe(newGroup => {
+      this.groupService.addGroup(trimmedtitle).subscribe((newGroup) => {
         this.groups.push(newGroup);
         this.newGroup = '';
       });
@@ -83,15 +86,18 @@ export class MenuComponent implements OnInit {
     if (updatedTitle && updatedTitle !== groupToEdit.title) {
       const updatedGroup: Group = {
         ...groupToEdit,
-        title: updatedTitle
+        title: updatedTitle,
       };
 
-      this.groupService.updateGroup(updatedGroup).subscribe(() => {
-        this.groups[index].title = updatedTitle;
-        this.resetEdit();
-      }, error => {
-        console.error('Erro ao atualizar grupo:', error);
-      });
+      this.groupService.updateGroup(updatedGroup).subscribe(
+        () => {
+          this.groups[index].title = updatedTitle;
+          this.resetEdit();
+        },
+        (error) => {
+          console.error('Erro ao atualizar grupo:', error);
+        }
+      );
     } else {
       this.resetEdit();
     }
@@ -116,6 +122,10 @@ export class MenuComponent implements OnInit {
 
   toggleMenu() {
     this.isExpanded = !this.isExpanded;
+  }
+
+  closeMenu() {
+    this.isExpanded = false;
   }
 
   openGroupManager() {
