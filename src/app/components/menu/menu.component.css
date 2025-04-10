@@ -69,6 +69,7 @@
   max-width: 150px;
 }
 
+/* APENAS MODAL */
 .group-modal-overlay {
   position: fixed;
   top: 0;
@@ -160,4 +161,9 @@
   flex: 1;
   margin-right: 0.5rem;
   padding: 0.3rem 0.4rem;
+}
+
+button.add-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }

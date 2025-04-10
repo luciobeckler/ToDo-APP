@@ -1,10 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { Task, TaskType, TaskPriority } from '../../models/task.model';
 import { TaskService } from '../../services/task.service';
 import { GroupService } from '../../services/group.service';
 import { Group } from '../../models/group.model';
 import { TaskSharedService } from '../../services/task-shared.service';
-import { Input } from '@angular/core';
 
 @Component({
   selector: 'app-inicio',
@@ -20,8 +19,6 @@ export class InicioComponent implements OnInit {
 
   editingField: { task: Task, field: keyof Task } | null = null;
   selectedTask: Task | null = null;
-
-  @Input() selectedGroupId: number | null = null;
 
   constructor(
     private taskService: TaskService,
@@ -98,7 +95,6 @@ export class InicioComponent implements OnInit {
   newTask: Task = {
     title: '',
     description: '',
-    group: 'Trabalho',
     priority: 'Normal',
     startDateTime: '',
     endDateTime: '',
@@ -106,14 +102,16 @@ export class InicioComponent implements OnInit {
   };
 
   addTask() {
-    this.newTask.groupId = Number(this.newTask.groupId);
-
     if (!this.newTask.startDateTime) {
       delete this.newTask.startDateTime;
     }
 
     if (!this.newTask.endDateTime) {
       delete this.newTask.endDateTime;
+    }
+
+    if (!this.newTask.groupId) {
+      delete this.newTask.groupId;
     }
 
     this.taskService.addTask(this.newTask).subscribe({
@@ -132,7 +130,6 @@ export class InicioComponent implements OnInit {
     this.newTask = {
       title: '',
       description: '',
-      group: 'Trabalho',
       priority: 'Normal',
       startDateTime: '',
       endDateTime: '',

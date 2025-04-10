@@ -1,5 +1,5 @@
 <div class="titulo-container">
-    <h2 class="titulo-grupo">Grupo atual: {{ activeGroupTitle }}</h2>
+    <h2 class="titulo-grupo">Tarefas: {{ activeGroupTitle }}</h2>
 </div>
 
 <div class="nova-tarefa-button">
@@ -142,8 +142,10 @@
             </label>
             <label>
                 Grupo:
-                <select [(ngModel)]="newTask.groupId" name="groupId" required>
-                    <option *ngFor="let group of taskGroups" [value]="group.id">
+                <select [(ngModel)]="newTask.groupId" name="groupId">
+                    <option [ngValue]="undefined">-- Nenhum grupo --</option>
+                    <option *ngFor="let group of taskGroups"
+                        [ngValue]="group.id">
                         {{ group.title }}
                     </option>
                 </select>

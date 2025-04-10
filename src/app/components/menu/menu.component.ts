@@ -1,7 +1,6 @@
 import { Component, EventEmitter, Output, OnInit } from '@angular/core';
 import { GroupService } from '../../services/group.service';
 import { Group } from '../../models/group.model';
-import { Task } from '../../models/task.model';
 import { TaskSharedService } from '../../services/task-shared.service';
 import { Router } from '@angular/router';
 import { TaskService } from '../../services/task.service';
@@ -23,7 +22,6 @@ export class MenuComponent implements OnInit {
   isExpanded = false;
   showGroupManager = false;
 
-  @Output() tasksFiltered = new EventEmitter<Task[]>();
   @Output() groupSelected = new EventEmitter<number>();
 
   constructor(
@@ -49,6 +47,16 @@ export class MenuComponent implements OnInit {
       this.selectedGroup = group;
       this.groupSelected.emit(groupId);
       this.taskSharedService.setTasks(group.tasks || [], group.title);
+      this.router.navigate(['/']);
+    });
+  }
+
+  // ALTERNATIVA SEM GRUPO
+  filterTasksWithoutGroup(): void {
+    this.selectedGroup = null;
+    this.taskService.getTasks().subscribe(tasks => {
+      const tasksWithoutGroup = tasks.filter(task => task.groupId == null);
+      this.taskSharedService.setTasks(tasksWithoutGroup, 'Sem grupo');
       this.router.navigate(['/']);
     });
   }
@@ -100,17 +108,7 @@ export class MenuComponent implements OnInit {
     });
   }
 
-  // ALTERNATIVA SEM GRUPO
-  filterTasksWithoutGroup(): void {
-    this.selectedGroup = null;
-    this.taskService.getTasks().subscribe(tasks => {
-      const tasksWithoutGroup = tasks.filter(task => task.groupId == null);
-      this.taskSharedService.setTasks(tasksWithoutGroup, 'Sem grupo');
-      this.router.navigate(['/']);
-    });
-  }
-
-  // POPUP DE GERENCIAR GRUPOS
+  // POPUP E MENU DE GERENCIAR GRUPOS
   resetEdit() {
     this.editedGroupIndex = null;
     this.editedGroupTitle = '';
@@ -127,5 +125,6 @@ export class MenuComponent implements OnInit {
   closeGroupManager() {
     this.showGroupManager = false;
     this.newGroup = '';
+    this.loadGroups();
   }
 }

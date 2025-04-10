@@ -4,7 +4,6 @@
     </div>
 
     <div class="group-list" *ngIf="isExpanded">
-        <h3>Grupos</h3>
         <ul>
             <li
                 class="no-group"
@@ -20,14 +19,14 @@
             </li>
         </ul>
         <button class="manage-button" (click)="openGroupManager()">Gerenciar
-            Grupos</button>
+            grupos</button>
     </div>
 </div>
 
 <!-- POPUP DE GERENCIAMENTO DE GRUPOS -->
 <div class="group-modal-overlay" *ngIf="showGroupManager">
     <div class="group-modal">
-        <h3>Gerenciar Grupos</h3>
+        <h3>Gerenciar grupos</h3>
         <ul>
             <li *ngFor="let group of groups; let i = index">
                 <ng-container *ngIf="editedGroupIndex !== i">
@@ -50,8 +49,11 @@
         </ul>
         <input [(ngModel)]="newGroup" placeholder="Novo grupo" />
         <div class="actions">
-            <button class="add-btn" (click)="addGroup()">Adicionar
-                grupo</button>
+            <button class="add-btn"
+                (click)="addGroup()"
+                [disabled]="!newGroup.trim()">
+                Adicionar grupo
+            </button>
             <button class="close-btn"
                 (click)="closeGroupManager()">Salvar e fechar</button>
         </div>
