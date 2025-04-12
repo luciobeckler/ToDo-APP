@@ -1,27 +1,40 @@
-# ToDoList
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.2.8.
+# ToDo-APP
 
-## Development server
+Aplicação front-end desenvolvida com Angular para consumo da [ToDo-API](https://github.com/luciobeckler/ToDo-API), permitindo o gerenciamento de tarefas de forma prática e intuitiva.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
 
-## Code scaffolding
+## Interface
+### Home
+![image](https://github.com/user-attachments/assets/c94003de-0fee-4e0f-9142-c2fa538491c4)
+### Modal de adição de tarefas
+![image](https://github.com/user-attachments/assets/c9c157e3-08b0-47df-9f56-531d237a60ec)
+### Modal de gerenciamento de grupos
+![image](https://github.com/user-attachments/assets/43ac5d1e-c5c8-4786-806c-af4e180971b7)
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+## Como rodar o projeto
 
-## Build
+1. Clone o repositório
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+```bash
+git clone https://github.com/luciobeckler/ToDo-APP
+cd ToDo-APP    
+```
 
-## Running unit tests
+2. Com o back-end rodando, verifique a porta utilizada pelo swagger para disponibilizar a API, vá em constantes/constantes.ts e altere verifique se o número da porta corresponde.
+```bash
+export const apiUrl: string = 'https://localhost:NumeroPorta/api';
+},
+```
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+3. Instale os node_modules
+```bash
+npm install
+```
 
-## Running end-to-end tests
+4. Execute a aplicação
+```bash
+ng serve
+```
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+5. Acesse a url disponibilizada no terminal, normalmente "http://localhost:4200/"
