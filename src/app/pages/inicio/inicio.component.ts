@@ -150,18 +150,35 @@ export class InicioComponent implements OnInit {
   }
 
   updateTask() {
-    if (!this.selectedTask) return;
+    if (!this.selectedTask) {
+      console.log('Dados insuficientes:', this.selectedTask, this.groupId);
+      return;
+    }
     const updatedTask = { ...this.selectedTask };
     this.taskService.updateTask(updatedTask).subscribe({
       next: () => {
         this.selectedTask = null;
         this.showModal = false;
-
-        this.taskSharedService.groupId$.subscribe((currentGroupId) => {
-          if (currentGroupId !== null) {
-            this.loadTasksByGroupId(currentGroupId);
-          }
-        });
+        if (this.groupId !== null) {
+          this.groupService.getGroupById(this.groupId).subscribe({
+            next: (group) => {
+              this.tasks = group.tasks || [];
+              this.groupId = null;
+            },
+            error: (error) => {
+              console.error('Erro ao recarregar tasks após update:', error);
+            },
+          });
+        } else {
+          this.taskService.getTasks().subscribe({
+            next: (tasks) => {
+              this.tasks = tasks.filter((task) => task.groupId == null);
+            },
+            error: (error) => {
+              console.error('Erro ao recarregar tarefas sem grupo:', error);
+            },
+          });
+        }
       },
       error: (error) => {
         console.error('Erro ao atualizar a tarefa:', error);
@@ -191,29 +208,16 @@ export class InicioComponent implements OnInit {
 
   // REGRA PARA EDITAR DENTRO DA TABELA: NÃO PODE TER FINAL ANTES DE ÍNICIO
   finishEditing(task: Task, field: keyof Task): void {
-    if (field === 'endDateTime' || field === 'startDateTime') {
-      const start = new Date(task.startDateTime || '');
-      const end = new Date(task.endDateTime || '');
+    this.editingField = null;
 
-      if (start && end && end < start) {
-        alert('A data de fim não pode ser menor que a de início.');
-        if (field === 'endDateTime') {
-          task.endDateTime = '';
-        } else if (field === 'startDateTime') {
-          task.startDateTime = '';
-        }
-        return;
-      }
-    }
+    const updatedTask = { ...task };
 
-    this.taskService.updateTask(task).subscribe({
+    this.taskService.updateTask(updatedTask).subscribe({
       next: () => {
-        this.editingField = null;
-        this.loadTasks();
+        console.log(`Tarefa atualizada com sucesso! Campo alterado: ${field}`);
       },
       error: (error) => {
-        console.error(`Erro ao atualizar o campo '${field}':`, error);
-        alert('Erro ao salvar alteração. Tente novamente.');
+        console.error('Erro ao atualizar a tarefa:', error);
       },
     });
   }

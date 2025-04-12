@@ -50,7 +50,7 @@
               <ng-template #titleEdit>
                 <input
                   [(ngModel)]="task.title"
-                  (blur)="editingField = null"
+                  (blur)="finishEditing(task, 'title')"
                   autofocus
                 />
               </ng-template>
@@ -73,8 +73,8 @@
               <ng-template #statusEdit>
                 <select
                   [(ngModel)]="task.status"
-                  (change)="onStatusChange(task)"
-                  (blur)="editingField = null"
+                  (change)="finishEditing(task, 'status')"
+                  (blur)="finishEditing(task, 'status')"
                   autofocus
                 >
                   <option *ngFor="let type of taskTypes" [value]="type">
