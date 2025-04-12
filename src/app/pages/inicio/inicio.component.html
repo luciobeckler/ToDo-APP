@@ -9,7 +9,7 @@
 
 <!-- BOARD DE TAREFAS POR STATUS -->
 <div class="board">
-  <ng-container *ngFor="let type of taskTypes">
+  <ng-container *ngFor="let type of statusList">
     <div
       class="column"
       *ngIf="getTasksByType(type).length > 0"
@@ -77,7 +77,7 @@
                   (blur)="finishEditing(task, 'status')"
                   autofocus
                 >
-                  <option *ngFor="let type of taskTypes" [value]="type">
+                  <option *ngFor="let type of statusList" [value]="type">
                     {{ type }}
                   </option>
                 </select>
@@ -162,7 +162,7 @@
                   autofocus
                 >
                   <option
-                    *ngFor="let priority of taskPriority"
+                    *ngFor="let priority of priorityList"
                     [value]="priority"
                   >
                     {{ priority }}
@@ -234,7 +234,7 @@
       <label>
         Prioridade:
         <select [(ngModel)]="newTask.priority" name="priority" required>
-          <option *ngFor="let priority of taskPriority" [value]="priority">
+          <option *ngFor="let priority of priorityList" [value]="priority">
             {{ priority }}
           </option>
         </select>
@@ -243,7 +243,7 @@
       <label>
         Status:
         <select [(ngModel)]="newTask.status" name="status" required>
-          <option *ngFor="let type of taskTypes" [value]="type">
+          <option *ngFor="let type of statusList" [value]="type">
             {{ type }}
           </option>
         </select>
@@ -302,7 +302,7 @@
     <label>
       Prioridade:
       <select [(ngModel)]="selectedTask.priority">
-        <option *ngFor="let priority of taskPriority" [value]="priority">
+        <option *ngFor="let priority of priorityList" [value]="priority">
           {{ priority }}
         </option>
       </select>
@@ -311,7 +311,7 @@
     <label>
       Status:
       <select [(ngModel)]="selectedTask.status" name="status" required>
-        <option *ngFor="let type of taskTypes" [value]="type">
+        <option *ngFor="let type of statusList" [value]="type">
           {{ type }}
         </option>
       </select>

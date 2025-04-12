@@ -4,6 +4,7 @@ import { TaskService } from '../../services/task.service';
 import { GroupService } from '../../services/group.service';
 import { Group } from '../../models/group.model';
 import { TaskSharedService } from '../../services/task-shared.service';
+import { taskPriority, taskStatus } from '../../constantes/constantes';
 
 @Component({
   selector: 'app-inicio',
@@ -12,18 +13,8 @@ import { TaskSharedService } from '../../services/task-shared.service';
 })
 export class InicioComponent implements OnInit {
   showModal = false;
-  taskTypes: string[] = [
-    'Não iniciado',
-    'Em progresso',
-    'Finalizado',
-    'Cancelado',
-  ];
-  taskPriority: string[] = [
-    'Urg. e imp.',
-    'Urg. mas não imp.',
-    'Imp. mas não urg.',
-    'Não urg. e não imp.',
-  ];
+  statusList: string[] = taskStatus;
+  priorityList: string[] = taskPriority;
   taskGroups: Group[] = [];
   tasks: Task[] = [];
   activeGroupTitle: string = '';
@@ -79,8 +70,8 @@ export class InicioComponent implements OnInit {
     return this.tasks
       .filter((task) => task.status === type)
       .sort((a, b) => {
-        const aIndex = this.taskPriority.indexOf(a.priority || '');
-        const bIndex = this.taskPriority.indexOf(b.priority || '');
+        const aIndex = this.priorityList.indexOf(a.priority || '');
+        const bIndex = this.priorityList.indexOf(b.priority || '');
         return aIndex - bIndex;
       });
   }
@@ -102,10 +93,10 @@ export class InicioComponent implements OnInit {
   newTask: Task = {
     title: '',
     description: '',
-    priority: this.taskPriority[0],
+    priority: this.priorityList[0],
     startDateTime: '',
     endDateTime: '',
-    status: this.taskTypes[0],
+    status: this.statusList[0],
   };
 
   addTask() {
@@ -137,10 +128,10 @@ export class InicioComponent implements OnInit {
     this.newTask = {
       title: '',
       description: '',
-      priority: this.taskPriority[0],
+      priority: this.priorityList[0],
       startDateTime: '',
       endDateTime: '',
-      status: this.taskTypes[0],
+      status: this.statusList[0],
     };
   }
 
@@ -225,13 +216,13 @@ export class InicioComponent implements OnInit {
   // CORES POR BLOCO DE STATUS
   getColorByType(type: string): string {
     switch (type) {
-      case this.taskTypes[0]:
+      case this.statusList[0]:
         return '#9CA3AF';
-      case this.taskTypes[1]:
+      case this.statusList[1]:
         return '#3B82F6';
-      case this.taskTypes[2]:
+      case this.statusList[2]:
         return '#10B981';
-      case this.taskTypes[3]:
+      case this.statusList[3]:
         return '#EF4444';
       default:
         return '#6B7280';
