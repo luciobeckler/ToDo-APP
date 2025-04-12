@@ -7,7 +7,7 @@ import { TaskService } from '../../services/task.service';
 import { cwd } from 'process';
 import { log } from 'console';
 
-const NO_GROUP: Group = { id: -1, title: 'Sem grupo' };
+const NO_GROUP: Group = { id: -1, title: 'Nenhum grupo' };
 
 @Component({
   selector: 'app-menu',
@@ -41,6 +41,7 @@ export class MenuComponent implements OnInit {
   loadGroups() {
     this.groupService.getGroups().subscribe((data) => {
       this.groups = data;
+      this.taskSharedService.setGroupList(data);
     });
   }
 
@@ -59,7 +60,7 @@ export class MenuComponent implements OnInit {
     this.selectedGroup = null;
     this.taskService.getTasks().subscribe((tasks) => {
       const tasksWithoutGroup = tasks.filter((task) => task.groupId == null);
-      this.taskSharedService.setTasks(tasksWithoutGroup, 'Sem grupo');
+      this.taskSharedService.setTasks(tasksWithoutGroup, 'Nenhum grupo');
       this.router.navigate(['/']);
     });
   }
@@ -71,6 +72,7 @@ export class MenuComponent implements OnInit {
         next: (newGroup) => {
           this.groups.push(newGroup);
           this.newGroup = '';
+          this.taskSharedService.setGroupList(this.groups);
         },
         error: (error) => {
           if (error.status === 409) {
@@ -124,6 +126,9 @@ export class MenuComponent implements OnInit {
       if (this.editedGroupIndex === index) {
         this.resetEdit();
       }
+
+      if (this.selectedGroup && this.selectedGroup.id === groupId)
+        this.filterTasksWithoutGroup();
     });
   }
 

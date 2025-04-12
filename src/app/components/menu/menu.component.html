@@ -16,7 +16,7 @@
         (click)="filterTasksWithoutGroup()"
         [class.selected]="selectedGroup === null"
       >
-        Sem grupo
+        Nenhum grupo
       </li>
       <li
         *ngFor="let group of groups"
@@ -64,15 +64,13 @@
     </ul>
     <input [(ngModel)]="newGroup" placeholder="Novo grupo" />
     <div class="actions">
+      <button class="close-btn" (click)="closeGroupManager()">Fechar</button>
       <button
         class="add-btn"
         (click)="addGroup()"
         [disabled]="!newGroup.trim()"
       >
         Adicionar grupo
-      </button>
-      <button class="close-btn" (click)="closeGroupManager()">
-        Salvar e fechar
       </button>
     </div>
   </div>

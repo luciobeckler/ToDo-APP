@@ -11,6 +11,9 @@ import { AppComponent } from './app.component';
 import { InicioComponent } from './pages/inicio/inicio.component';
 import { MenuComponent } from './components/menu/menu.component';
 import { ClickOutsideDirective } from './directives/click-outside.directive';
+import { TaskBoardComponent } from './components/task-board/task-board.component';
+import { NewTaskModalComponent } from './components/new-task-modal/new-task-modal.component';
+import { TaskDetailModalComponent } from './components/task-detail-modal/task-detail-modal.component';
 
 @NgModule({
   declarations: [
@@ -18,6 +21,9 @@ import { ClickOutsideDirective } from './directives/click-outside.directive';
     InicioComponent,
     MenuComponent,
     ClickOutsideDirective,
+    TaskBoardComponent,
+    NewTaskModalComponent,
+    TaskDetailModalComponent,
   ],
   imports: [
     BrowserModule,

@@ -20,9 +20,6 @@ export class InicioComponent implements OnInit {
   activeGroupTitle: string = '';
   groupId: number | null = null;
 
-  editingField: { task: Task; field: keyof Task } | null = null;
-  selectedTask: Task | null = null;
-
   constructor(
     private taskService: TaskService,
     private groupService: GroupService,
@@ -32,7 +29,6 @@ export class InicioComponent implements OnInit {
   ngOnInit(): void {
     this.taskSharedService.tasks$.subscribe((tasks) => {
       this.tasks = tasks;
-      this.selectedTask = null;
     });
 
     this.taskSharedService.groupTitle$.subscribe((title) => {
@@ -43,12 +39,11 @@ export class InicioComponent implements OnInit {
       this.groupId = id;
     });
 
-    this.loadGroups();
-  }
+    this.taskSharedService.groupList$.subscribe((groups) => {
+      this.taskGroups = groups;
+    });
 
-  loadTasks() {
-    if (!this.groupId) return;
-    this.loadTasksByGroupId(this.groupId);
+    this.loadGroups();
   }
 
   loadGroups() {
@@ -76,10 +71,6 @@ export class InicioComponent implements OnInit {
       });
   }
 
-  onStatusChange(task: Task): void {
-    this.editingField = null;
-  }
-
   setActiveGroupTitle(groupId: number | undefined) {
     if (!groupId || !this.taskGroups.length) return;
 
@@ -99,24 +90,11 @@ export class InicioComponent implements OnInit {
     status: this.statusList[0],
   };
 
-  addTask() {
-    if (!this.newTask.startDateTime) {
-      delete this.newTask.startDateTime;
-    }
-
-    if (!this.newTask.endDateTime) {
-      delete this.newTask.endDateTime;
-    }
-
-    if (!this.newTask.groupId) {
-      delete this.newTask.groupId;
-    }
-
-    this.taskService.addTask(this.newTask).subscribe({
-      next: (addTask) => {
-        this.tasks.push(addTask);
+  addTask(newTask: Task) {
+    this.taskService.addTask(newTask).subscribe({
+      next: (task: Task) => {
+        if (task.groupId == this.groupId) this.tasks.push(task);
         this.showModal = false;
-        this.resetForm();
       },
       error: (error) => {
         console.error('Erro ao adicionar task:', error);
@@ -132,118 +110,6 @@ export class InicioComponent implements OnInit {
       startDateTime: '',
       endDateTime: '',
       status: this.statusList[0],
-    };
-  }
-
-  // BOTÃO INFO DA TAREFA
-  openTaskDetails(task: Task) {
-    this.selectedTask = task;
-  }
-
-  updateTask() {
-    if (!this.selectedTask) {
-      console.log('Dados insuficientes:', this.selectedTask, this.groupId);
-      return;
-    }
-    const updatedTask = { ...this.selectedTask };
-    this.taskService.updateTask(updatedTask).subscribe({
-      next: () => {
-        this.selectedTask = null;
-        this.showModal = false;
-        if (this.groupId !== null) {
-          this.groupService.getGroupById(this.groupId).subscribe({
-            next: (group) => {
-              this.tasks = group.tasks || [];
-              this.groupId = null;
-            },
-            error: (error) => {
-              console.error('Erro ao recarregar tasks após update:', error);
-            },
-          });
-        } else {
-          this.taskService.getTasks().subscribe({
-            next: (tasks) => {
-              this.tasks = tasks.filter((task) => task.groupId == null);
-            },
-            error: (error) => {
-              console.error('Erro ao recarregar tarefas sem grupo:', error);
-            },
-          });
-        }
-      },
-      error: (error) => {
-        console.error('Erro ao atualizar a tarefa:', error);
-      },
-    });
-  }
-
-  loadTasksByGroupId(groupId: number) {
-    this.groupService.getGroupById(groupId).subscribe({
-      next: (group) => {
-        this.tasks = group.tasks || [];
-        this.activeGroupTitle = group.title;
-      },
-      error: (error) => {
-        console.error('Erro ao carregar tarefas do grupo:', error);
-      },
-    });
-  }
-
-  deleteTask(taskToDelete: Task) {
-    if (!taskToDelete.id) return;
-    this.taskService.deleteTask(taskToDelete.id).subscribe(() => {
-      this.tasks = this.tasks.filter((t) => t !== taskToDelete);
-      this.selectedTask = null;
-    });
-  }
-
-  // REGRA PARA EDITAR DENTRO DA TABELA: NÃO PODE TER FINAL ANTES DE ÍNICIO
-  finishEditing(task: Task, field: keyof Task): void {
-    this.editingField = null;
-
-    const updatedTask = { ...task };
-
-    this.taskService.updateTask(updatedTask).subscribe({
-      next: () => {
-        console.log(`Tarefa atualizada com sucesso! Campo alterado: ${field}`);
-      },
-      error: (error) => {
-        console.error('Erro ao atualizar a tarefa:', error);
-      },
-    });
-  }
-
-  // CORES POR BLOCO DE STATUS
-  getColorByType(type: string): string {
-    switch (type) {
-      case this.statusList[0]:
-        return '#9CA3AF';
-      case this.statusList[1]:
-        return '#3B82F6';
-      case this.statusList[2]:
-        return '#10B981';
-      case this.statusList[3]:
-        return '#EF4444';
-      default:
-        return '#6B7280';
-    }
-  }
-
-  getColumnStyle(type: string): { [key: string]: string } {
-    return {
-      borderLeft: `5px solid ${this.getColorByType(type)}`,
-    };
-  }
-
-  getHeaderStyle(type: string): { [key: string]: string } {
-    return {
-      borderBottom: `2px solid ${this.getColorByType(type)}`,
-    };
-  }
-
-  getTheadStyle(type: string): { [key: string]: string } {
-    return {
-      backgroundColor: this.getColorByType(type),
     };
   }
 }

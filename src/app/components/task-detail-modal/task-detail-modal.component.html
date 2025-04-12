@@ -1,0 +1,58 @@
+<!-- task-detail-modal.component.html -->
+<div class="modal-backdrop" *ngIf="task" (click)="onClose()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <h3>Detalhes da Tarefa</h3>
+
+    <label>
+      Título:
+      <input [(ngModel)]="task.title" />
+    </label>
+
+    <label>
+      Descrição:
+      <textarea [(ngModel)]="task.description" rows="4"></textarea>
+    </label>
+
+    <label>
+      Grupo:
+      <select [(ngModel)]="task.groupId">
+        <option *ngFor="let group of taskGroups" [value]="group.id">
+          {{ group.title }}
+        </option>
+      </select>
+    </label>
+
+    <label>
+      Início:
+      <input type="date" [(ngModel)]="task.startDateTime" />
+    </label>
+
+    <label>
+      Fim:
+      <input type="date" [(ngModel)]="task.endDateTime" />
+    </label>
+
+    <label>
+      Prioridade:
+      <select [(ngModel)]="task.priority">
+        <option *ngFor="let priority of priorityList" [value]="priority">
+          {{ priority }}
+        </option>
+      </select>
+    </label>
+
+    <label>
+      Status:
+      <select [(ngModel)]="task.status" name="status" required>
+        <option *ngFor="let type of statusList" [value]="type">
+          {{ type }}
+        </option>
+      </select>
+    </label>
+
+    <div class="modal-buttons">
+      <button class="danger" (click)="onDelete()">Excluir tarefa</button>
+      <button (click)="onSave()">Salvar e fechar</button>
+    </div>
+  </div>
+</div>

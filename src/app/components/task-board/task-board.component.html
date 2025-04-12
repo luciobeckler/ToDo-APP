@@ -1,0 +1,188 @@
+<!-- BOARD DE TAREFAS POR STATUS -->
+<div class="board">
+  <ng-container *ngFor="let type of statusList">
+    <div
+      class="column"
+      *ngIf="getTasksByType(type).length > 0"
+      [ngStyle]="getColumnStyle(type)"
+    >
+      <!-- Cabeçalho da coluna -->
+      <div class="header" [ngStyle]="getHeaderStyle(type)">
+        {{ type }}
+      </div>
+
+      <table class="task-table">
+        <thead [ngStyle]="getTheadStyle(type)">
+          <tr>
+            <th>Título</th>
+            <th>Status</th>
+            <th>Início</th>
+            <th>Fim</th>
+            <th>Prioridade</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let task of getTasksByType(type)">
+            <!-- TÍTULO -->
+            <td
+              (click)="editingField = { task, field: 'title' }"
+              data-label="Título"
+            >
+              <ng-container
+                *ngIf="
+                  editingField?.task !== task ||
+                    editingField?.field !== 'title';
+                  else titleEdit
+                "
+              >
+                {{ task.title }}
+              </ng-container>
+              <ng-template #titleEdit>
+                <input
+                  [(ngModel)]="task.title"
+                  (blur)="finishEditing(task, 'title')"
+                  autofocus
+                />
+              </ng-template>
+            </td>
+
+            <!-- STATUS -->
+            <td
+              (click)="editingField = { task, field: 'status' }"
+              data-label="Status"
+            >
+              <ng-container
+                *ngIf="
+                  editingField?.task !== task ||
+                    editingField?.field !== 'status';
+                  else statusEdit
+                "
+              >
+                {{ task.status }}
+              </ng-container>
+              <ng-template #statusEdit>
+                <select
+                  [(ngModel)]="task.status"
+                  (change)="finishEditing(task, 'status')"
+                  (blur)="finishEditing(task, 'status')"
+                  autofocus
+                >
+                  <option *ngFor="let type of statusList" [value]="type">
+                    {{ type }}
+                  </option>
+                </select>
+              </ng-template>
+            </td>
+
+            <!-- INÍCIO -->
+            <td
+              (click)="editingField = { task, field: 'startDateTime' }"
+              data-label="Início"
+            >
+              <ng-container
+                *ngIf="
+                  editingField?.task !== task ||
+                    editingField?.field !== 'startDateTime';
+                  else startEdit
+                "
+              >
+                {{
+                  task.startDateTime
+                    ? (task.startDateTime | date : "dd/MM/yyyy")
+                    : "-"
+                }}
+              </ng-container>
+              <ng-template #startEdit>
+                <input
+                  type="date"
+                  [(ngModel)]="task.startDateTime"
+                  (blur)="finishEditing(task, 'startDateTime')"
+                  autofocus
+                />
+              </ng-template>
+            </td>
+
+            <!-- FIM -->
+            <td
+              (click)="editingField = { task, field: 'endDateTime' }"
+              data-label="Fim"
+            >
+              <ng-container
+                *ngIf="
+                  editingField?.task !== task ||
+                    editingField?.field !== 'endDateTime';
+                  else endEdit
+                "
+              >
+                {{
+                  task.endDateTime
+                    ? (task.endDateTime | date : "dd/MM/yyyy")
+                    : "-"
+                }}
+              </ng-container>
+              <ng-template #endEdit>
+                <input
+                  type="date"
+                  [(ngModel)]="task.endDateTime"
+                  (blur)="finishEditing(task, 'endDateTime')"
+                  autofocus
+                />
+              </ng-template>
+            </td>
+
+            <!-- PRIORIDADE -->
+            <td
+              (click)="editingField = { task, field: 'priority' }"
+              data-label="Prioridade"
+            >
+              <ng-container
+                *ngIf="
+                  editingField?.task !== task ||
+                    editingField?.field !== 'priority';
+                  else priorityEdit
+                "
+              >
+                {{ task.priority }}
+              </ng-container>
+              <ng-template #priorityEdit>
+                <select
+                  [(ngModel)]="task.priority"
+                  (blur)="finishEditing(task, 'priority')"
+                  (change)="finishEditing(task, 'priority')"
+                  autofocus
+                >
+                  <option
+                    *ngFor="let priority of priorityList"
+                    [value]="priority"
+                  >
+                    {{ priority }}
+                  </option>
+                </select>
+              </ng-template>
+            </td>
+
+            <!-- DETALHES -->
+            <td class="info-cell" data-label="Detalhes">
+              <mat-icon class="info-icon" (click)="openTaskDetails(task)"
+                >info</mat-icon
+              >
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </ng-container>
+</div>
+
+<!-- MODAL: DETALHES DA TAREFA -->
+<app-task-detail-modal
+  *ngIf="selectedTask"
+  [task]="selectedTask"
+  [taskGroups]="taskGroups"
+  [priorityList]="priorityList"
+  [statusList]="statusList"
+  (close)="selectedTask = null"
+  (save)="updateTask($event)"
+  (delete)="deleteTask($event)"
+></app-task-detail-modal>

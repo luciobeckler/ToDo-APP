@@ -1,0 +1,163 @@
+.board {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.5rem;
+}
+
+.column {
+  background-color: white;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 900px;
+  padding: 1rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.column .header {
+  font-weight: 500;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  padding-bottom: 0.5rem;
+  color: #333;
+}
+
+.task-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.task-table th,
+.task-table td {
+  border: none;
+  border-bottom: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.task-table td.info-cell {
+  text-align: center;
+}
+
+.task-table td:hover {
+  cursor: pointer;
+}
+
+.task-table th {
+  color: white;
+  font-weight: 500;
+}
+
+.task-table tr:nth-child(even) {
+  background-color: #f5f8fa;
+}
+
+.task-table tbody tr:hover {
+  background-color: #dbdbdb;
+  color: #000000;
+}
+
+.task-table th:nth-child(1),
+.task-table td:nth-child(1) {
+  width: 40%;
+}
+
+.task-table th:nth-child(2),
+.task-table td:nth-child(2) {
+  width: 18%;
+}
+
+.task-table th:nth-child(3),
+.task-table td:nth-child(3),
+.task-table th:nth-child(4),
+.task-table td:nth-child(4),
+.task-table th:nth-child(5),
+.task-table td:nth-child(5) {
+  width: 12%;
+}
+
+.task-table th:nth-child(6),
+.task-table td:nth-child(6) {
+  width: 5%;
+}
+
+/* INPUTS NA TABELA */
+td input,
+td select {
+  border: none;
+  background: transparent;
+  font: inherit;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  outline: none;
+}
+
+/* RESPONSIVIDADE */
+@media (max-width: 768px) {
+  .board {
+    margin-left: 26px !important;
+    margin-right: -10px !important;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .column {
+    width: 100% !important;
+    box-sizing: border-box;
+  }
+
+  .task-table {
+    border: 0;
+    width: 100%;
+  }
+
+  .task-table thead {
+    display: none;
+  }
+
+  .task-table tbody,
+  .task-table tr,
+  .task-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .task-table tr {
+    margin-bottom: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 8px;
+    background-color: #fff;
+  }
+
+  .task-table td {
+    padding: 10px;
+    text-align: left;
+    position: relative;
+  }
+
+  .task-table td::before {
+    content: attr(data-label);
+    font-weight: bold;
+    display: block;
+    margin-bottom: 4px;
+    color: #444;
+  }
+
+  .task-table input,
+  .task-table select {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .task-table .info-cell {
+    text-align: right;
+  }
+
+  .task-table .info-icon {
+    cursor: pointer;
+  }
+}
