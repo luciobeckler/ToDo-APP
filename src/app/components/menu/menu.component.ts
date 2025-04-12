@@ -65,11 +65,20 @@ export class MenuComponent implements OnInit {
   }
 
   addGroup() {
-    const trimmedtitle = this.newGroup.trim();
-    if (trimmedtitle) {
-      this.groupService.addGroup(trimmedtitle).subscribe((newGroup) => {
-        this.groups.push(newGroup);
-        this.newGroup = '';
+    const trimmedTitle = this.newGroup.trim();
+    if (trimmedTitle) {
+      this.groupService.addGroup(trimmedTitle).subscribe({
+        next: (newGroup) => {
+          this.groups.push(newGroup);
+          this.newGroup = '';
+        },
+        error: (error) => {
+          if (error.status === 409) {
+            alert('Já existe um grupo com esse nome.');
+          } else {
+            alert('Erro ao adicionar grupo. Tente novamente.');
+          }
+        },
       });
     }
   }
@@ -89,15 +98,19 @@ export class MenuComponent implements OnInit {
         title: updatedTitle,
       };
 
-      this.groupService.updateGroup(updatedGroup).subscribe(
-        () => {
+      this.groupService.updateGroup(updatedGroup).subscribe({
+        next: () => {
           this.groups[index].title = updatedTitle;
           this.resetEdit();
         },
-        (error) => {
-          console.error('Erro ao atualizar grupo:', error);
-        }
-      );
+        error: (error) => {
+          if (error.status === 409) {
+            alert('Já existe um grupo com esse nome.');
+          } else {
+            alert('Erro ao atualizar grupo. Tente novamente.');
+          }
+        },
+      });
     } else {
       this.resetEdit();
     }
