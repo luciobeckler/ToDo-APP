@@ -1,4 +1,4 @@
-export const apiUrl: string = 'https://localhost:7007/api';
+export const apiUrl: string = 'http://localhost:5000/api';
 export const taskStatus: string[] = [
   'Não iniciado',
   'Em progresso',

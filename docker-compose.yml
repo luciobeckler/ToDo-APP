@@ -1,0 +1,37 @@
+#! Para rodar o docker é necessário criar uma pasta e adicionar o front e o back dentro dela e
+#! após isto, subir este arquivo para esta pasta e executar o comando "docker-compose up"
+
+services:
+  to-do-list:
+    build:
+      context: ./to-do-list
+    ports:
+      - "4200:80"
+    depends_on:
+      - todo-api
+
+  todo-api:
+    build:
+      context: ./todo-api
+    ports:
+      - "5000:8080"
+    depends_on:
+      - db
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DevConnection=Host=db;Port=5432;Database=tododb;Username=postgres;Password=beckler111
+
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_DB: tododb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: beckler111
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+volumes:
+  postgres-data:
