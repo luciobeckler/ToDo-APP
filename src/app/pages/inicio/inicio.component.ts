@@ -93,7 +93,10 @@ export class InicioComponent implements OnInit {
   addTask(newTask: Task) {
     this.taskService.addTask(newTask).subscribe({
       next: (task: Task) => {
-        if (task.groupId == this.groupId) this.tasks.push(task);
+        if ((task.groupId ?? null) === (this.groupId ?? null)) {
+          this.tasks.push(task);
+        }
+
         this.showModal = false;
       },
       error: (error) => {
