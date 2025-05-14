@@ -2,13 +2,13 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Group } from '../models/group.model';
-import { environmet } from '../environments/environment';
+import { environment } from '../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class GroupService {
-  private apiUrl = environmet.apiUrl;
+  private apiUrl = environment.apiUrl;
   private endPoint = '/Groups';
 
   constructor(private http: HttpClient) {}

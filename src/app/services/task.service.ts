@@ -2,13 +2,13 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Task } from '../models/task.model';
-import { environmet } from '../environments/environment';
+import { environment } from '../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TaskService {
-  private apiUrl = environmet.apiUrl;
+  private apiUrl = environment.apiUrl;
   private endPoint = '/ToDoTasks';
 
   constructor(private http: HttpClient) {}
