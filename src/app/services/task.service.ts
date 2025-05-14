@@ -2,29 +2,33 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Task } from '../models/task.model';
-import { apiUrl } from '../constantes/constantes';
+import { environmet } from '../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TaskService {
+  private apiUrl = environmet.apiUrl;
   private endPoint = '/ToDoTasks';
 
   constructor(private http: HttpClient) {}
 
   getTasks(): Observable<Task[]> {
-    return this.http.get<Task[]>(`${apiUrl + this.endPoint}`);
+    return this.http.get<Task[]>(`${this.apiUrl + this.endPoint}`);
   }
 
   addTask(task: any): Observable<any> {
-    return this.http.post<any>(`${apiUrl + this.endPoint}`, task);
+    return this.http.post<any>(`${this.apiUrl + this.endPoint}`, task);
   }
 
   updateTask(task: Task): Observable<void> {
-    return this.http.put<void>(`${apiUrl + this.endPoint}?id=${task.id}`, task);
+    return this.http.put<void>(
+      `${this.apiUrl + this.endPoint}?id=${task.id}`,
+      task
+    );
   }
 
   deleteTask(id: number): Observable<void> {
-    return this.http.delete<void>(`${apiUrl + this.endPoint}/${id}`);
+    return this.http.delete<void>(`${this.apiUrl + this.endPoint}/${id}`);
   }
 }
