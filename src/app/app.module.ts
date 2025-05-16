@@ -14,11 +14,13 @@ import { ClickOutsideDirective } from './directives/click-outside.directive';
 import { TaskBoardComponent } from './components/task-board/task-board.component';
 import { NewTaskModalComponent } from './components/new-task-modal/new-task-modal.component';
 import { TaskDetailModalComponent } from './components/task-detail-modal/task-detail-modal.component';
+import { LoginComponent } from './pages/login/login.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     InicioComponent,
+    LoginComponent,
     MenuComponent,
     ClickOutsideDirective,
     TaskBoardComponent,

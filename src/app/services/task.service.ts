@@ -14,17 +14,22 @@ export class TaskService {
   constructor(private http: HttpClient) {}
 
   getTasks(): Observable<Task[]> {
-    return this.http.get<Task[]>(`${this.apiUrl + this.endPoint}`);
+    return this.http.get<Task[]>(`${this.apiUrl + this.endPoint}`, {
+      withCredentials: true,
+    });
   }
 
   addTask(task: any): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl + this.endPoint}`, task);
+    return this.http.post<any>(`${this.apiUrl + this.endPoint}`, task, {
+      withCredentials: true,
+    });
   }
 
   updateTask(task: Task): Observable<void> {
     return this.http.put<void>(
       `${this.apiUrl + this.endPoint}?id=${task.id}`,
-      task
+      task,
+      { withCredentials: true }
     );
   }
 

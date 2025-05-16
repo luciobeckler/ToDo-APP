@@ -51,7 +51,6 @@ export class MenuComponent implements OnInit {
       this.groupSelected.emit(groupId);
       this.taskSharedService.setGroupId(groupId);
       this.taskSharedService.setTasks(group.tasks || [], group.title);
-      this.router.navigate(['/']);
     });
   }
 
@@ -61,7 +60,6 @@ export class MenuComponent implements OnInit {
     this.taskService.getTasks().subscribe((tasks) => {
       const tasksWithoutGroup = tasks.filter((task) => task.groupId == null);
       this.taskSharedService.setTasks(tasksWithoutGroup, 'Nenhum grupo');
-      this.router.navigate(['/']);
     });
   }
 
