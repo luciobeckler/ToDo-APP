@@ -15,12 +15,14 @@ import { TaskBoardComponent } from './components/task-board/task-board.component
 import { NewTaskModalComponent } from './components/new-task-modal/new-task-modal.component';
 import { TaskDetailModalComponent } from './components/task-detail-modal/task-detail-modal.component';
 import { LoginComponent } from './pages/login/login.component';
+import { RegisterComponent } from './pages/register/register.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     InicioComponent,
     LoginComponent,
+    RegisterComponent,
     MenuComponent,
     ClickOutsideDirective,
     TaskBoardComponent,

@@ -1,5 +1,5 @@
 <div class="login-container">
-  <h1>Login</h1>
+  <h1>Registrar</h1>
   <form (submit)="onSubmit($event)">
     <div class="form-group">
       <label for="email">Email:</label>
@@ -21,12 +21,14 @@
         required
       />
       <p *ngIf="senhaError" class="error-message">
-        A senha deve conter pelo menos 8 caracteres.
+        A senha deve conter pelo menos 8 caracteres, uma letra maiúscula e um
+        símbolo.
       </p>
     </div>
-    <button type="submit">Entrar</button>
+    <button type="submit">Registrar</button>
+    <p *ngIf="registerError" class="error-message">{{ registerError }}</p>
   </form>
   <p style="text-align: center; margin-top: 10px">
-    Não tem uma conta? <a routerLink="/register">Criar conta</a>
+    Já tem uma conta? <a routerLink="/login">Entrar</a>
   </p>
 </div>
