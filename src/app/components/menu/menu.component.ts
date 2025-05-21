@@ -67,17 +67,13 @@ export class MenuComponent implements OnInit {
     const trimmedTitle = this.newGroup.trim();
     if (trimmedTitle) {
       this.groupService.addGroup(trimmedTitle).subscribe({
-        next: (newGroup) => {
-          this.groups.push(newGroup);
+        next: () => {
           this.newGroup = '';
           this.taskSharedService.setGroupList(this.groups);
+          this.loadGroups();
         },
         error: (error) => {
-          if (error.status === 409) {
-            alert('Já existe um grupo com esse nome.');
-          } else {
-            alert('Erro ao adicionar grupo. Tente novamente.');
-          }
+          alert('Erro ao adicionar grupo. Tente novamente.');
         },
       });
     }
