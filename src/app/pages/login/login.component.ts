@@ -10,9 +10,7 @@ import { RegisterUser } from '../../models/registerUser';
 })
 export class LoginComponent implements OnInit {
   constructor(private router: Router, private accountService: AccountService) {}
-  ngOnInit(): void {
-    console.log('Login renderizado');
-  }
+  ngOnInit(): void {}
 
   email: string = '';
   senha: string = '';

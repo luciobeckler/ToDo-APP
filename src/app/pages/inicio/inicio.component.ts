@@ -80,7 +80,6 @@ export class InicioComponent implements OnInit {
     }
   }
 
-  // BOTÃO ADICIONAR E SEU POPUP
   newTask: Task = {
     title: '',
     description: '',

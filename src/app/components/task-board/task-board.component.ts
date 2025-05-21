@@ -25,12 +25,8 @@ export class TaskBoardComponent implements OnInit {
     private groupService: GroupService
   ) {}
 
-  ngOnInit(): void {
-    console.log('ngOnInit - tasks:', this.tasks);
-    console.log('ngOnInit - taskStatus:', this.statusList);
-  }
+  ngOnInit(): void {}
 
-  // CORES POR BLOCO DE STATUS
   getColorByType(type: string): string {
     switch (type) {
       case this.statusList[0]:
@@ -78,23 +74,19 @@ export class TaskBoardComponent implements OnInit {
     this.editingField = null;
   }
 
-  // REGRA PARA EDITAR DENTRO DA TABELA: NÃO PODE TER FINAL ANTES DE ÍNICIO
   finishEditing(task: Task, field: keyof Task): void {
     this.editingField = null;
 
     const updatedTask = { ...task };
 
     this.taskService.updateTask(updatedTask).subscribe({
-      next: () => {
-        console.log(`Tarefa atualizada com sucesso! Campo alterado: ${field}`);
-      },
+      next: () => {},
       error: (error) => {
         console.error('Erro ao atualizar a tarefa:', error);
       },
     });
   }
 
-  // BOTÃO INFO DA TAREFA
   openTaskDetails(task: Task) {
     debugger;
     this.selectedTask = task;

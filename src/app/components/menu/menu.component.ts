@@ -54,7 +54,6 @@ export class MenuComponent implements OnInit {
     });
   }
 
-  // ALTERNATIVA SEM GRUPO
   filterTasksWithoutGroup(): void {
     this.selectedGroup = null;
     this.taskService.getTasks().subscribe((tasks) => {
@@ -126,7 +125,6 @@ export class MenuComponent implements OnInit {
     });
   }
 
-  // POPUP E MENU DE GERENCIAR GRUPOS
   resetEdit() {
     this.editedGroupIndex = null;
     this.editedGroupTitle = '';
